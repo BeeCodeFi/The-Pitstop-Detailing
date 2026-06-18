@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Bebas_Neue } from "next/font/google";
 import { Header, Footer, SmoothScroll } from "@/components/layout";
 import { SITE_CONFIG } from "@/lib/constants";
 import "@/styles/globals.css";
@@ -8,6 +8,13 @@ const inter = Inter({
   subsets: ["latin"],
   display: "swap",
   variable: "--font-inter",
+});
+
+const bebasNeue = Bebas_Neue({
+  weight: "400",
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-bebas",
 });
 
 export const metadata: Metadata = {
@@ -48,8 +55,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="min-h-screen flex flex-col">
+    <html lang="en" className={`${inter.variable} ${bebasNeue.variable}`}>
+      <body className="min-h-screen bg-background text-foreground font-[family-name:var(--font-inter)]">
         <SmoothScroll>
           <Header />
           <main className="flex-1 pt-16">{children}</main>

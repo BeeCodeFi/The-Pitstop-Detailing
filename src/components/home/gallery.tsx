@@ -34,7 +34,7 @@ const galleryItems = [
     id: 5,
     title: "Paint Correction — Tesla Model S",
     category: "exterior",
-    image: "https://images.unsplash.com/photo-1580274455191-1c62238ce452?w=600&h=400&fit=crop",
+    image: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=600&h=400&fit=crop",
   },
   {
     id: 6,

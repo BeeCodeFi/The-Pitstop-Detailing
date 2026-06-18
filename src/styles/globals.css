@@ -20,8 +20,8 @@
   --color-error: #EF4444;
 
   /* Typography */
-  --font-heading: "Bebas Neue", "Impact", sans-serif;
-  --font-body: "Inter", system-ui, sans-serif;
+  --font-heading: var(--font-bebas, "Bebas Neue"), "Impact", sans-serif;
+  --font-body: var(--font-inter, "Inter"), system-ui, sans-serif;
 
   /* Spacing */
   --spacing-section: 6rem;
@@ -67,12 +67,6 @@
 }
 
 /* Base styles */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
 html {
   scroll-behavior: smooth;
 }
@@ -80,7 +74,6 @@ html {
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);
-  font-family: var(--font-body);
   line-height: 1.6;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;

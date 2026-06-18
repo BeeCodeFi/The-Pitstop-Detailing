@@ -12,7 +12,7 @@ const items = [
   { id: 2, title: "Mercedes AMG GT — Full Detail", category: "Exterior", image: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&h=600&fit=crop" },
   { id: 3, title: "Audi RS7 — Interior Restore", category: "Interior", image: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=800&h=600&fit=crop" },
   { id: 4, title: "Porsche 911 — PPF Full Body", category: "PPF", image: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=800&h=600&fit=crop" },
-  { id: 5, title: "Tesla Model S — Paint Correction", category: "Before/After", image: "https://images.unsplash.com/photo-1580274455191-1c62238ce452?w=800&h=600&fit=crop" },
+  { id: 5, title: "Tesla Model S — Paint Correction", category: "Before/After", image: "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=800&h=600&fit=crop" },
   { id: 6, title: "Range Rover — Engine Bay", category: "Exterior", image: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=800&h=600&fit=crop" },
   { id: 7, title: "Lamborghini Huracan — Ceramic", category: "Ceramic", image: "https://images.unsplash.com/photo-1525609004556-c46c90e6df01?w=800&h=600&fit=crop" },
   { id: 8, title: "Rolls Royce — Interior Detail", category: "Interior", image: "https://images.unsplash.com/photo-1563720223185-11003d516935?w=800&h=600&fit=crop" },
