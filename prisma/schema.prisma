@@ -1,0 +1,334 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CUSTOMER
+  STAFF
+  ADMIN
+}
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum PickupStatus {
+  SCHEDULED
+  PICKED_UP
+  IN_SERVICE
+  READY
+  DELIVERED
+}
+
+enum PaymentStatus {
+  PENDING
+  PAID
+  REFUNDED
+  FAILED
+}
+
+// ─── AUTH & USERS ───────────────────────────────────────────────────────────────
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  phone         String?
+  image         String?
+  password      String?
+  role          Role      @default(CUSTOMER)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  accounts Account[]
+  sessions Session[]
+  vehicles Vehicle[]
+  bookings Booking[]
+
+  // Staff-specific
+  assignedBookings Booking[] @relation("StaffBookings")
+  assignedPickups  PickupRequest[] @relation("DriverPickups")
+
+  @@map("users")
+}
+
+model Account {
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@id([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@id([identifier, token])
+  @@map("verification_tokens")
+}
+
+// ─── VEHICLES ───────────────────────────────────────────────────────────────────
+
+model Vehicle {
+  id           String   @id @default(cuid())
+  userId       String
+  make         String
+  model        String
+  year         Int
+  color        String?
+  plateNumber  String?
+  vehicleType  String   @default("sedan") // sedan, suv, hatchback, luxury, bike
+  createdAt    DateTime @default(now())
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookings Booking[]
+
+  @@map("vehicles")
+}
+
+// ─── SERVICES ───────────────────────────────────────────────────────────────────
+
+model ServiceCategory {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String?
+  image       String?
+  order       Int       @default(0)
+  isActive    Boolean   @default(true)
+  services    Service[]
+
+  @@map("service_categories")
+}
+
+model Service {
+  id          String   @id @default(cuid())
+  categoryId  String
+  name        String
+  slug        String   @unique
+  description String?
+  shortDesc   String?
+  image       String?
+  duration    Int      // in minutes
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  category ServiceCategory @relation(fields: [categoryId], references: [id])
+  prices   ServicePrice[]
+  bookings BookingService[]
+
+  @@map("services")
+}
+
+model ServicePrice {
+  id          String @id @default(cuid())
+  serviceId   String
+  vehicleType String // sedan, suv, hatchback, luxury, bike
+  price       Int    // in paise (INR * 100)
+
+  service Service @relation(fields: [serviceId], references: [id], onDelete: Cascade)
+
+  @@unique([serviceId, vehicleType])
+  @@map("service_prices")
+}
+
+// ─── PACKAGES ───────────────────────────────────────────────────────────────────
+
+model Package {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  description String?
+  image       String?
+  features    String[] // list of included features
+  isPopular   Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  prices   PackagePrice[]
+  bookings Booking[]
+
+  @@map("packages")
+}
+
+model PackagePrice {
+  id          String @id @default(cuid())
+  packageId   String
+  vehicleType String
+  price       Int    // in paise
+
+  package Package @relation(fields: [packageId], references: [id], onDelete: Cascade)
+
+  @@unique([packageId, vehicleType])
+  @@map("package_prices")
+}
+
+// ─── BOOKINGS ───────────────────────────────────────────────────────────────────
+
+model TimeSlot {
+  id        String   @id @default(cuid())
+  date      DateTime @db.Date
+  startTime String   // "09:00"
+  endTime   String   // "10:30"
+  isBlocked Boolean  @default(false)
+  maxBookings Int    @default(2)
+  
+  bookings Booking[]
+
+  @@unique([date, startTime])
+  @@map("time_slots")
+}
+
+model Booking {
+  id          String        @id @default(cuid())
+  userId      String
+  vehicleId   String
+  timeSlotId  String
+  packageId   String?
+  staffId     String?
+  status      BookingStatus @default(PENDING)
+  totalAmount Int           // in paise
+  notes       String?
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  user     User         @relation(fields: [userId], references: [id])
+  vehicle  Vehicle      @relation(fields: [vehicleId], references: [id])
+  timeSlot TimeSlot     @relation(fields: [timeSlotId], references: [id])
+  package  Package?     @relation(fields: [packageId], references: [id])
+  staff    User?        @relation("StaffBookings", fields: [staffId], references: [id])
+
+  services BookingService[]
+  payment  Payment?
+  pickup   PickupRequest?
+
+  @@map("bookings")
+}
+
+model BookingService {
+  id        String @id @default(cuid())
+  bookingId String
+  serviceId String
+  price     Int    // price at time of booking (in paise)
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+  service Service @relation(fields: [serviceId], references: [id])
+
+  @@map("booking_services")
+}
+
+// ─── PAYMENTS ───────────────────────────────────────────────────────────────────
+
+model Payment {
+  id              String        @id @default(cuid())
+  bookingId       String        @unique
+  razorpayOrderId String?       @unique
+  razorpayPaymentId String?     @unique
+  amount          Int           // in paise
+  status          PaymentStatus @default(PENDING)
+  method          String?       // upi, card, netbanking, wallet
+  refundId        String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  booking Booking @relation(fields: [bookingId], references: [id])
+
+  @@map("payments")
+}
+
+// ─── PICKUP & DELIVERY ──────────────────────────────────────────────────────────
+
+model PickupRequest {
+  id            String       @id @default(cuid())
+  bookingId     String       @unique
+  driverId      String?
+  pickupAddress String
+  pickupCity    String
+  pickupPincode String
+  pickupDate    DateTime
+  pickupTime    String
+  deliveryDate  DateTime?
+  status        PickupStatus @default(SCHEDULED)
+  notes         String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  booking Booking @relation(fields: [bookingId], references: [id])
+  driver  User?   @relation("DriverPickups", fields: [driverId], references: [id])
+
+  @@map("pickup_requests")
+}
+
+// ─── CONTENT ────────────────────────────────────────────────────────────────────
+
+model GalleryItem {
+  id          String   @id @default(cuid())
+  title       String?
+  description String?
+  imageUrl    String
+  videoUrl    String?
+  category    String?  // before-after, exterior, interior, ceramic, ppf
+  isFeatured  Boolean  @default(false)
+  order       Int      @default(0)
+  createdAt   DateTime @default(now())
+
+  @@map("gallery_items")
+}
+
+model Testimonial {
+  id        String   @id @default(cuid())
+  name      String
+  vehicle   String?
+  rating    Int      @default(5)
+  review    String
+  image     String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@map("testimonials")
+}
+
+// ─── SETTINGS ───────────────────────────────────────────────────────────────────
+
+model BusinessSetting {
+  id    String @id @default(cuid())
+  key   String @unique
+  value String
+
+  @@map("business_settings")
+}
