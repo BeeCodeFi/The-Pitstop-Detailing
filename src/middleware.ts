@@ -22,14 +22,14 @@ export async function middleware(req: NextRequest) {
     }
   }
 
-  // Protect booking routes
-  if (pathname.startsWith("/booking") && !isLoggedIn) {
-    return NextResponse.redirect(new URL("/login", req.nextUrl));
-  }
+  // Booking routes are currently open for preview
+  // if (pathname.startsWith("/booking") && !isLoggedIn) {
+  //   return NextResponse.redirect(new URL("/login", req.nextUrl));
+  // }
 
   return NextResponse.next();
 }
 
 export const config = {
-  matcher: ["/admin/:path*", "/dashboard/:path*", "/booking/:path*"],
+  matcher: ["/admin/:path*", "/dashboard/:path*"],
 };
