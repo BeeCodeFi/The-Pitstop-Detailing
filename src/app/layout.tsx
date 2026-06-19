@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Inter, Bebas_Neue } from "next/font/google";
+import { headers } from "next/headers";
 import { Header, Footer, SmoothScroll } from "@/components/layout";
 import { Providers } from "@/components/providers";
 import { SITE_CONFIG } from "@/lib/constants";
@@ -50,20 +51,28 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const headersList = await headers();
+  const pathname = headersList.get("x-pathname") || "";
+  const isAdmin = pathname.startsWith("/admin");
+
   return (
     <html lang="en" className={`${inter.variable} ${bebasNeue.variable}`}>
       <body className="min-h-screen bg-background text-foreground font-[family-name:var(--font-inter)]">
         <Providers>
-          <SmoothScroll>
-            <Header />
-            <main className="flex-1 pt-16">{children}</main>
-            <Footer />
-          </SmoothScroll>
+          {isAdmin ? (
+            children
+          ) : (
+            <SmoothScroll>
+              <Header />
+              <main className="flex-1 pt-16">{children}</main>
+              <Footer />
+            </SmoothScroll>
+          )}
         </Providers>
       </body>
     </html>

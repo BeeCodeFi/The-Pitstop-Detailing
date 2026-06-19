@@ -4,30 +4,24 @@ import { NextResponse, type NextRequest } from "next/server";
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
+  // Set pathname header for root layout to detect admin routes
+  const response = NextResponse.next();
+  response.headers.set("x-pathname", pathname);
+
   const token = await getToken({ req, secret: process.env.AUTH_SECRET });
   const isLoggedIn = !!token;
   const userRole = token?.role as string | undefined;
 
-  // Admin & dashboard guards disabled for preview
-  // if (pathname.startsWith("/admin")) {
-  //   if (!isLoggedIn || userRole !== "ADMIN") {
-  //     return NextResponse.redirect(new URL("/login", req.nextUrl));
-  //   }
-  // }
-  // if (pathname.startsWith("/dashboard")) {
-  //   if (!isLoggedIn) {
-  //     return NextResponse.redirect(new URL("/login", req.nextUrl));
-  //   }
-  // }
+  // Protect admin routes (except admin login page)
+  if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
+    if (!isLoggedIn || userRole !== "ADMIN") {
+      return NextResponse.redirect(new URL("/admin/login", req.nextUrl));
+    }
+  }
 
-  // Booking routes are currently open for preview
-  // if (pathname.startsWith("/booking") && !isLoggedIn) {
-  //   return NextResponse.redirect(new URL("/login", req.nextUrl));
-  // }
-
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
-  matcher: [],
+  matcher: ["/((?!_next/static|_next/image|favicon.ico|api).*)"],
 };
