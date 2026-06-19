@@ -13,11 +13,12 @@ export async function middleware(req: NextRequest) {
   const userRole = token?.role as string | undefined;
 
   // Protect admin routes (except admin login page)
-  if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
-    if (!isLoggedIn || userRole !== "ADMIN") {
-      return NextResponse.redirect(new URL("/admin/login", req.nextUrl));
-    }
-  }
+  // TODO: Re-enable before production
+  // if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
+  //   if (!isLoggedIn || userRole !== "ADMIN") {
+  //     return NextResponse.redirect(new URL("/admin/login", req.nextUrl));
+  //   }
+  // }
 
   return response;
 }

@@ -20,29 +20,16 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
   const userRole = (session?.user as { role?: string } | undefined)?.role;
 
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push("/admin/login");
-    }
-    if (status === "authenticated" && userRole !== "ADMIN") {
-      router.push("/admin/login");
-    }
-  }, [status, userRole, router]);
+  // TODO: Re-enable auth checks before production
+  // useEffect(() => {
+  //   if (status === "unauthenticated") router.push("/admin/login");
+  //   if (status === "authenticated" && userRole !== "ADMIN") router.push("/admin/login");
+  // }, [status, userRole, router]);
 
   // Don't wrap the login page in the admin layout
   if (pathname === "/admin/login") {
     return <>{children}</>;
   }
-
-  if (status === "loading") {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0A0A0A]">
-        <div className="h-8 w-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  if (status === "unauthenticated" || userRole !== "ADMIN") return null;
 
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex">
