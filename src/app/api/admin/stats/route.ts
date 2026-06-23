@@ -1,12 +1,25 @@
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
-import { prisma } from "@/lib/prisma";
+
+const MOCK_STATS = {
+  totalUsers: 142,
+  totalBookings: 318,
+  pendingBookings: 12,
+  totalRevenue: 284500_00, // in paise → ₹2,84,500
+};
 
 export async function GET() {
+  // ── Mock mode (no DB) ──────────────────────────────────────────────────────
+  if (!process.env.DATABASE_URL) {
+    return NextResponse.json({ stats: MOCK_STATS });
+  }
+
+  // ── Production ─────────────────────────────────────────────────────────────
   try {
+    const { auth } = await import("@/lib/auth");
+    const { prisma } = await import("@/lib/prisma");
+
     const session = await auth();
     const user = session?.user as { id: string; role?: string } | undefined;
-
     if (!user || user.role !== "ADMIN") {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
@@ -15,7 +28,10 @@ export async function GET() {
       prisma.user.count(),
       prisma.booking.count(),
       prisma.booking.count({ where: { status: "PENDING" } }),
-      prisma.booking.aggregate({ _sum: { totalAmount: true }, where: { status: { in: ["CONFIRMED", "COMPLETED", "IN_PROGRESS"] } } }),
+      prisma.booking.aggregate({
+        _sum: { totalAmount: true },
+        where: { status: { in: ["CONFIRMED", "COMPLETED", "IN_PROGRESS"] } },
+      }),
     ]);
 
     return NextResponse.json({
