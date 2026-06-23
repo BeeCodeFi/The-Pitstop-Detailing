@@ -41,7 +41,7 @@ export function Hero() {
       <div className="absolute inset-0 bg-gradient-to-b from-background via-background to-card" />
 
       {/* Red glow accent */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px]" />
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] sm:w-[600px] sm:h-[600px] bg-primary/10 rounded-full blur-[120px]" />
 
       {/* Grid pattern overlay */}
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:64px_64px]" />
@@ -59,10 +59,10 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.2, duration: 0.6 }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-primary/30 bg-primary/5 mb-8"
+          className="inline-flex items-center gap-2 px-3 py-1.5 sm:px-4 sm:py-2 rounded-full border border-primary/30 bg-primary/5 mb-6 sm:mb-8"
         >
-          <Sparkles className="h-4 w-4 text-primary" />
-          <span className="text-xs font-medium text-primary tracking-wide uppercase">
+          <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
+          <span className="text-[10px] sm:text-xs font-medium text-primary tracking-wide uppercase">
             Premium Car Detailing Studio
           </span>
         </motion.div>
@@ -70,12 +70,12 @@ export function Hero() {
         {/* Main Title */}
         <h1
           ref={titleRef}
-          className="font-heading text-6xl sm:text-7xl md:text-8xl lg:text-9xl text-foreground leading-[0.85] tracking-tight opacity-0"
+          className="font-heading text-[3.5rem] sm:text-7xl md:text-8xl lg:text-9xl text-foreground leading-[0.85] tracking-tight opacity-0"
         >
           THE{" "}
           <span className="text-gradient">PITSTOP</span>
           <br />
-          <span className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-muted-foreground">
+          <span className="text-3xl sm:text-5xl md:text-6xl lg:text-7xl text-muted-foreground">
             DETAILING
           </span>
         </h1>
@@ -85,7 +85,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.4, duration: 0.8 }}
-          className="mt-6 text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto"
+          className="mt-5 sm:mt-6 text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto px-2"
         >
           Where performance meets perfection. Expert ceramic coatings, paint
           protection, and full detailing with{" "}
@@ -100,16 +100,16 @@ export function Hero() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 1.6, duration: 0.6 }}
-          className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4"
+          className="mt-8 sm:mt-10 flex flex-col xs:flex-row sm:flex-row items-center justify-center gap-3 sm:gap-4"
         >
-          <Link href="/booking">
-            <Button size="xl" className="group">
+          <Link href="/booking" className="w-full xs:w-auto sm:w-auto">
+            <Button size="xl" className="group w-full xs:w-auto sm:w-auto">
               Book Appointment
               <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
             </Button>
           </Link>
-          <Link href="/services">
-            <Button variant="outline" size="xl">
+          <Link href="/services" className="w-full xs:w-auto sm:w-auto">
+            <Button variant="outline" size="xl" className="w-full xs:w-auto sm:w-auto">
               Explore Services
             </Button>
           </Link>
@@ -120,7 +120,7 @@ export function Hero() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 2, duration: 0.8 }}
-          className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 max-w-3xl mx-auto"
+          className="mt-12 sm:mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 max-w-3xl mx-auto"
         >
           {[
             { value: "5000+", label: "Cars Detailed" },
@@ -129,10 +129,10 @@ export function Hero() {
             { value: "100%", label: "Satisfaction" },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
-              <div className="text-2xl sm:text-3xl font-bold text-foreground">
+              <div className="text-xl sm:text-2xl md:text-3xl font-bold text-foreground">
                 {stat.value}
               </div>
-              <div className="text-xs text-muted-foreground mt-1">
+              <div className="text-[10px] sm:text-xs text-muted-foreground mt-1">
                 {stat.label}
               </div>
             </div>

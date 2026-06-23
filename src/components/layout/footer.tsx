@@ -29,8 +29,8 @@ function YoutubeIcon({ className }: { className?: string }) {
 export function Footer() {
   return (
     <footer className="border-t border-border bg-card">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-10 sm:py-16">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10">
           {/* Brand */}
           <div className="space-y-4">
             <div>
@@ -44,12 +44,13 @@ export function Footer() {
             <p className="text-sm text-muted-foreground leading-relaxed">
               {SITE_CONFIG.description}
             </p>
-            <div className="flex gap-3">
+            <div className="flex gap-2">
               <a
                 href={SITE_CONFIG.socials.instagram}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="h-9 w-9 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+                aria-label="Instagram"
+                className="h-10 w-10 sm:h-9 sm:w-9 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
               >
                 <InstagramIcon className="h-4 w-4" />
               </a>
@@ -57,7 +58,8 @@ export function Footer() {
                 href={SITE_CONFIG.socials.facebook}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="h-9 w-9 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+                aria-label="Facebook"
+                className="h-10 w-10 sm:h-9 sm:w-9 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
               >
                 <FacebookIcon className="h-4 w-4" />
               </a>
@@ -65,7 +67,8 @@ export function Footer() {
                 href={SITE_CONFIG.socials.youtube}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="h-9 w-9 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
+                aria-label="YouTube"
+                className="h-10 w-10 sm:h-9 sm:w-9 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:border-primary transition-colors"
               >
                 <YoutubeIcon className="h-4 w-4" />
               </a>
@@ -170,7 +173,7 @@ export function Footer() {
         </div>
 
         {/* Bottom */}
-        <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-8 sm:mt-12 pt-6 sm:pt-8 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-3 sm:gap-4 text-center sm:text-left">
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} {SITE_CONFIG.name}. All rights reserved.
           </p>

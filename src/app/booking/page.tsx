@@ -226,37 +226,45 @@ export default function BookingPage() {
   }
 
   return (
-    <div className="py-24 min-h-screen">
+    <div className="py-16 sm:py-24 min-h-screen">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
-          <h1 className="font-heading text-4xl sm:text-5xl text-foreground">BOOK YOUR SLOT</h1>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-8 sm:mb-10">
+          <h1 className="font-heading text-3xl sm:text-4xl md:text-5xl text-foreground">BOOK YOUR SLOT</h1>
           <p className="text-sm text-muted-foreground mt-2">Complete the steps below to schedule your detailing appointment</p>
         </motion.div>
 
         {/* Step indicator */}
-        <div className="flex items-center justify-between mb-10 max-w-lg mx-auto">
-          {steps.map((step, i) => (
-            <div key={step.id} className="flex items-center">
-              <button
-                onClick={() => { if (step.id < currentStep) setCurrentStep(step.id); }}
-                className={cn(
-                  "h-10 w-10 rounded-full flex items-center justify-center text-sm font-bold transition-all",
-                  currentStep > step.id
-                    ? "bg-primary text-white cursor-pointer hover:bg-primary-dark"
-                    : currentStep === step.id
-                    ? "border-2 border-primary text-primary bg-primary/10"
-                    : "border border-border text-muted-foreground cursor-default"
+        <div className="flex items-center justify-center mb-8 sm:mb-10">
+          <div className="flex items-center gap-0">
+            {steps.map((step, i) => (
+              <div key={step.id} className="flex items-center">
+                <button
+                  onClick={() => { if (step.id < currentStep) setCurrentStep(step.id); }}
+                  className={cn(
+                    "h-9 w-9 sm:h-10 sm:w-10 rounded-full flex items-center justify-center text-sm font-bold transition-all shrink-0",
+                    currentStep > step.id
+                      ? "bg-primary text-white cursor-pointer hover:bg-primary-dark"
+                      : currentStep === step.id
+                      ? "border-2 border-primary text-primary bg-primary/10"
+                      : "border border-border text-muted-foreground cursor-default"
+                  )}
+                  disabled={step.id > currentStep}
+                  title={step.label}
+                >
+                  {currentStep > step.id ? <Check className="h-4 w-4" /> : <step.icon className="h-4 w-4" />}
+                </button>
+                {/* Label - hidden on xs */}
+                <span className={cn(
+                  "hidden sm:block ml-1.5 mr-3 text-xs font-medium",
+                  currentStep === step.id ? "text-primary" : "text-muted-foreground"
+                )}>{step.label}</span>
+                {i < steps.length - 1 && (
+                  <div className={cn("w-5 sm:w-8 h-px mx-1 sm:mx-2 transition-colors shrink-0", currentStep > step.id ? "bg-primary" : "bg-border")} />
                 )}
-                disabled={step.id > currentStep}
-              >
-                {currentStep > step.id ? <Check className="h-4 w-4" /> : <step.icon className="h-4 w-4" />}
-              </button>
-              {i < steps.length - 1 && (
-                <div className={cn("hidden sm:block w-8 h-px mx-2 transition-colors", currentStep > step.id ? "bg-primary" : "bg-border")} />
-              )}
-            </div>
-          ))}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Step content */}
@@ -288,7 +296,7 @@ export default function BookingPage() {
                       <p className="font-semibold text-foreground text-sm">{service.name}</p>
                       <p className="text-xs text-muted-foreground mt-1">{service.desc}</p>
                       <div className="flex items-center justify-between mt-3 pt-2 border-t border-border">
-                        <span className="text-primary font-bold">{service.priceLabel}</span>
+                        <span className="text-primary font-bold text-sm">{service.priceLabel}</span>
                         <span className="text-xs text-muted-foreground">{service.duration}</span>
                       </div>
                     </button>
@@ -450,36 +458,36 @@ export default function BookingPage() {
                 <h2 className="text-lg font-bold text-foreground mb-4">Confirm & Pay</h2>
                 <Card hover={false}>
                   <div className="space-y-3 mb-6">
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Service</span>
-                      <span className="text-foreground font-medium">{selectedService?.name || "—"}</span>
+                    <div className="flex justify-between items-start gap-3 text-sm">
+                      <span className="text-muted-foreground shrink-0">Service</span>
+                      <span className="text-foreground font-medium text-right">{selectedService?.name || "—"}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Vehicle</span>
-                      <span className="text-foreground font-medium">
+                    <div className="flex justify-between items-start gap-3 text-sm">
+                      <span className="text-muted-foreground shrink-0">Vehicle</span>
+                      <span className="text-foreground font-medium text-right">
                         {booking.vehicle.make && booking.vehicle.model
                           ? `${booking.vehicle.year} ${booking.vehicle.make} ${booking.vehicle.model}`
                           : "—"}
                       </span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Date & Time</span>
-                      <span className="text-foreground font-medium">
+                    <div className="flex justify-between items-start gap-3 text-sm">
+                      <span className="text-muted-foreground shrink-0">Date &amp; Time</span>
+                      <span className="text-foreground font-medium text-right">
                         {booking.date && booking.timeSlot
                           ? `${new Date(booking.date).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })} at ${booking.timeSlot}`
                           : "—"}
                       </span>
                     </div>
-                    <div className="flex justify-between text-sm">
-                      <span className="text-muted-foreground">Delivery</span>
-                      <span className="text-foreground font-medium">
+                    <div className="flex justify-between items-start gap-3 text-sm">
+                      <span className="text-muted-foreground shrink-0">Delivery</span>
+                      <span className="text-foreground font-medium text-right">
                         {booking.needsPickup ? "Pickup & Delivery" : "Self Drop-off"}
                       </span>
                     </div>
                     {booking.needsPickup && booking.pickup.address && (
-                      <div className="flex justify-between text-sm">
-                        <span className="text-muted-foreground">Pickup From</span>
-                        <span className="text-foreground font-medium text-right max-w-[200px]">
+                      <div className="flex justify-between items-start gap-3 text-sm">
+                        <span className="text-muted-foreground shrink-0">Pickup From</span>
+                        <span className="text-foreground font-medium text-right max-w-[55%]">
                           {booking.pickup.address}, {booking.pickup.city} - {booking.pickup.pincode}
                         </span>
                       </div>

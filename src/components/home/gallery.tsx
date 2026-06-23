@@ -50,7 +50,7 @@ export function Gallery() {
   const [hoveredId, setHoveredId] = useState<number | null>(null);
 
   return (
-    <section className="py-24 bg-card relative overflow-hidden">
+    <section className="py-16 sm:py-24 bg-card relative overflow-hidden">
       <div className="absolute bottom-0 left-0 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
@@ -75,7 +75,7 @@ export function Gallery() {
 
         <div
           ref={ref}
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"
         >
           {galleryItems.map((item, i) => (
             <motion.div

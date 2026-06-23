@@ -150,7 +150,7 @@ export default function AdminBookingsPage() {
                 </div>
 
                 {/* Info grid */}
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-4">
+                <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-3 gap-4 mb-4">
                   {/* Customer */}
                   <div className="flex items-start gap-3">
                     <div className="w-9 h-9 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center shrink-0 text-xs font-bold text-blue-400">
@@ -200,17 +200,17 @@ export default function AdminBookingsPage() {
                 )}
 
                 {/* Bottom row */}
-                <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-white/5">
+                <div className="flex flex-col xs:flex-row xs:flex-wrap items-start xs:items-center justify-between gap-3 pt-3 border-t border-white/5">
                   <p className="text-base font-bold text-primary">
                     ₹{(booking.totalAmount / 100).toLocaleString("en-IN")}
                   </p>
-                  <div className="flex items-center gap-2">
+                  <div className="flex flex-wrap items-center gap-2 w-full xs:w-auto">
                     <span className="text-xs text-gray-600">Update status:</span>
                     <select
                       value={booking.status}
                       onChange={(e) => updateStatus(booking.id, e.target.value)}
                       disabled={updating === booking.id}
-                      className="h-8 px-3 rounded-lg border border-white/10 bg-white/5 text-xs text-white focus:border-primary focus:outline-none disabled:opacity-50 cursor-pointer transition-colors hover:border-white/20"
+                      className="flex-1 xs:flex-none h-8 px-3 rounded-lg border border-white/10 bg-white/5 text-xs text-white focus:border-primary focus:outline-none disabled:opacity-50 cursor-pointer transition-colors hover:border-white/20 min-w-[120px]"
                     >
                       {statusOptions.filter(Boolean).map((s) => (
                         <option key={s} value={s} className="bg-gray-900">

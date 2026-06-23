@@ -35,7 +35,7 @@ const testimonials = [
 
 export function Testimonials() {
   return (
-    <section className="py-24 relative">
+    <section className="py-16 sm:py-24 relative">
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[120px]" />
 
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 relative">
@@ -54,7 +54,7 @@ export function Testimonials() {
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
           {testimonials.map((t, i) => (
             <motion.div
               key={t.id}

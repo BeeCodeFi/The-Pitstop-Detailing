@@ -28,7 +28,7 @@ const steps = [
 
 export function CTA() {
   return (
-    <section className="py-24 relative overflow-hidden">
+    <section className="py-16 sm:py-24 relative overflow-hidden">
       {/* Background */}
       <div className="absolute inset-0 bg-gradient-to-b from-card via-background to-background" />
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
@@ -40,7 +40,7 @@ export function CTA() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-16"
         >
           <span className="text-xs font-semibold text-primary tracking-[0.3em] uppercase">
             Simple Process
@@ -50,7 +50,7 @@ export function CTA() {
           </h2>
         </motion.div>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 sm:gap-8 mb-14 sm:mb-20">
           {steps.map((step, i) => (
             <motion.div
               key={step.step}
@@ -86,29 +86,29 @@ export function CTA() {
           whileInView={{ opacity: 1, scale: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="relative rounded-2xl border border-primary/20 bg-gradient-to-br from-card to-muted p-10 sm:p-14 text-center overflow-hidden"
+          className="relative rounded-2xl border border-primary/20 bg-gradient-to-br from-card to-muted p-6 sm:p-10 md:p-14 text-center overflow-hidden"
         >
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(227,24,55,0.1),transparent_50%)]" />
           <div className="relative">
-            <h3 className="font-heading text-3xl sm:text-4xl md:text-5xl text-foreground mb-4">
+            <h3 className="font-heading text-3xl sm:text-4xl md:text-5xl text-foreground mb-3 sm:mb-4">
               READY TO TRANSFORM
               <br />
               YOUR RIDE?
             </h3>
-            <p className="text-muted-foreground max-w-lg mx-auto mb-8">
+            <p className="text-sm sm:text-base text-muted-foreground max-w-lg mx-auto mb-6 sm:mb-8">
               Book your appointment today and experience the difference
               professional detailing makes. Free pickup & delivery on all
               premium services.
             </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <Link href="/booking">
-                <Button size="xl" className="group">
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
+              <Link href="/booking" className="w-full sm:w-auto">
+                <Button size="xl" className="group w-full sm:w-auto">
                   Book Your Slot
                   <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
-              <Link href="/pricing">
-                <Button variant="secondary" size="xl">
+              <Link href="/pricing" className="w-full sm:w-auto">
+                <Button variant="secondary" size="xl" className="w-full sm:w-auto">
                   View Pricing
                 </Button>
               </Link>

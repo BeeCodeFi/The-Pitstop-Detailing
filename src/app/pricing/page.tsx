@@ -65,14 +65,14 @@ const addOns = [
 
 export default function PricingPage() {
   return (
-    <div className="py-24">
+    <div className="py-16 sm:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-10 sm:mb-16"
         >
           <span className="text-xs font-semibold text-primary tracking-[0.3em] uppercase">
             Simple & Transparent
@@ -80,14 +80,14 @@ export default function PricingPage() {
           <h1 className="mt-3 font-heading text-5xl sm:text-6xl md:text-7xl text-foreground">
             PRICING
           </h1>
-          <p className="mt-4 text-muted-foreground max-w-xl mx-auto">
+          <p className="mt-4 text-sm sm:text-base text-muted-foreground max-w-xl mx-auto">
             Choose from our curated packages or build your own custom service. No
             hidden fees, ever.
           </p>
         </motion.div>
 
         {/* Packages */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-20">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-14 sm:mb-20">
           {packages.map((pkg, i) => (
             <motion.div
               key={pkg.name}
@@ -96,7 +96,7 @@ export default function PricingPage() {
               viewport={{ once: true }}
               transition={{ delay: i * 0.1, duration: 0.6 }}
               className={cn(
-                "relative rounded-2xl border p-8 flex flex-col",
+                "relative rounded-2xl border p-6 sm:p-8 flex flex-col",
                 pkg.popular
                   ? "border-primary bg-gradient-to-b from-primary/5 to-card shadow-xl shadow-primary/10"
                   : "border-border bg-card"
