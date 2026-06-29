@@ -20,7 +20,7 @@ const carTypes = [
     model: "Hyundai Verna",
     tagline: "Verna · City · Ciaz & similar",
     image:
-      "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=700&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=700&q=80&auto=format&fit=crop",
   },
   {
     id: "compact_suv",
@@ -28,7 +28,7 @@ const carTypes = [
     model: "Hyundai Creta",
     tagline: "Creta · Seltos · Brezza & similar",
     image:
-      "https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=700&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=700&q=80&auto=format&fit=crop",
   },
   {
     id: "suv",
@@ -78,43 +78,43 @@ export default function ServicesPage() {
               key={car.id}
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1, duration: 0.5 }}
+              transition={{ delay: i * 0.08, duration: 0.5 }}
             >
-              <Link
-                href={"/services/" + car.id}
-                className="group block rounded-2xl overflow-hidden border border-border hover:border-primary/50 transition-all duration-300 hover:shadow-xl hover:shadow-primary/10"
-              >
-                {/* Car image */}
-                <div className="relative aspect-[16/9] overflow-hidden bg-muted">
-                  <Image
-                    src={car.image}
-                    alt={car.model}
-                    fill
-                    className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
-                  {/* Type badge */}
-                  <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-primary text-white text-xs font-bold tracking-wide">
-                    {car.label}
-                  </span>
-                  {/* Arrow on hover */}
-                  <div className="absolute bottom-3 right-3 h-8 w-8 rounded-full bg-primary flex items-center justify-center opacity-0 group-hover:opacity-100 translate-x-2 group-hover:translate-x-0 transition-all duration-300">
-                    <ArrowRight className="h-4 w-4 text-white" />
-                  </div>
-                </div>
+              <Link href={"/services/" + car.id} className="group block">
+                <div className="relative overflow-hidden rounded-xl bg-card border border-border shadow-sm hover:shadow-xl transition-shadow duration-300">
+                  {/* Image */}
+                  <div className="relative aspect-video overflow-hidden">
+                    <Image
+                      src={car.image}
+                      alt={car.model}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
 
-                {/* Info */}
-                <div className="p-5 bg-card">
-                  <h3 className="font-heading text-2xl text-foreground group-hover:text-primary transition-colors duration-300">
-                    {car.model}
-                  </h3>
-                  <p className="text-xs text-muted-foreground mt-1.5">
-                    {car.tagline}
-                  </p>
-                  <div className="mt-4 flex items-center gap-1.5 text-primary text-xs font-semibold">
-                    View Services &amp; Pricing
-                    <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1" />
+                    {/* Type badge */}
+                    <span className="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-primary text-white text-xs font-bold">
+                      {car.label}
+                    </span>
+
+                    {/* Hover arrow */}
+                    <div className="absolute bottom-3 right-3 h-8 w-8 rounded-full bg-white/20 backdrop-blur-sm flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                      <ArrowRight className="h-4 w-4 text-white" />
+                    </div>
+                  </div>
+
+                  {/* Info */}
+                  <div className="p-4">
+                    <h3 className="font-bold text-foreground text-base">
+                      {car.model}
+                    </h3>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {car.tagline}
+                    </p>
+                    <p className="mt-3 text-xs font-semibold text-primary">
+                      View Services & Pricing →
+                    </p>
                   </div>
                 </div>
               </Link>

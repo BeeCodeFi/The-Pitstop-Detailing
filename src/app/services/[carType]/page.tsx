@@ -19,14 +19,13 @@ import { useParams, notFound } from "next/navigation";
 import { Card } from "@/components/ui";
 import { Button } from "@/components/ui";
 
-// ─── Car type data ────────────────────────────────────────────────────────────
+// ─── Car type data ────────────────────────────────────────────────────────────────────────────────
 
 const CAR_TYPES = {
   hatchback: {
     label: "Hatchback",
     model: "Maruti Swift",
     tagline: "Swift · i20 · Polo & similar",
-    multiplier: 0.8,
     image:
       "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=1400&q=80&auto=format&fit=crop",
   },
@@ -34,23 +33,20 @@ const CAR_TYPES = {
     label: "Sedan",
     model: "Hyundai Verna",
     tagline: "Verna · City · Ciaz & similar",
-    multiplier: 1.0,
     image:
-      "https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1400&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=1400&q=80&auto=format&fit=crop",
   },
   compact_suv: {
     label: "Compact SUV",
     model: "Hyundai Creta",
     tagline: "Creta · Seltos · Brezza & similar",
-    multiplier: 1.2,
     image:
-      "https://images.unsplash.com/photo-1625047509168-a7026f36de04?w=1400&q=80&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=1400&q=80&auto=format&fit=crop",
   },
   suv: {
     label: "SUV",
     model: "Toyota Fortuner",
     tagline: "Fortuner · Endeavour · MU-X & similar",
-    multiplier: 1.4,
     image:
       "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=1400&q=80&auto=format&fit=crop",
   },
@@ -58,7 +54,6 @@ const CAR_TYPES = {
     label: "Luxury",
     model: "BMW",
     tagline: "BMW · Mercedes · Audi · Porsche & similar",
-    multiplier: 1.8,
     image:
       "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1400&q=80&auto=format&fit=crop",
   },
@@ -66,179 +61,209 @@ const CAR_TYPES = {
 
 type CarTypeId = keyof typeof CAR_TYPES;
 
-// ─── Price helper ─────────────────────────────────────────────────────────────
+// ─── Price helper ────────────────────────────────────────────────────────────────────────────────────
 
-function applyMultiplier(price: string, multiplier: number): string {
-  if (price === "FREE*" || price === "—") return price;
-  if (!price.startsWith("₹")) return price;
-  const num = parseInt(price.replace("₹", "").replace(/,/g, ""), 10);
-  if (isNaN(num)) return price;
-  const result = Math.round((num * multiplier) / 100) * 100;
-  return "₹" + result.toLocaleString("en-IN");
+function formatPrice(amount: number | null): string {
+  if (amount === null) return "N/A";
+  return "₹" + amount.toLocaleString("en-IN");
 }
 
-// ─── Service categories (base prices = Sedan 1×) ─────────────────────────────
+// ─── Price map type ─────────────────────────────────────────────────────────────────────────────────
+
+type PriceMap = Record<CarTypeId, number | null>;
+
+// ─── Service categories (prices from official rate chart) ───────────────────────────────
 
 const CATEGORIES = [
   {
     icon: Droplets,
-    title: "Exterior Detailing",
+    title: "Wash",
     services: [
-      { name: "Foam Wash & Dry", price: "₹499", duration: "45 min" },
-      { name: "Clay Bar Treatment", price: "₹1,499", duration: "1.5 hr" },
-      { name: "Single Stage Polish", price: "₹3,999", duration: "3 hr" },
       {
-        name: "Multi-Stage Paint Correction",
-        price: "₹7,999",
-        duration: "6 hr",
+        name: "Foam Wash",
+        prices: { hatchback: 350, sedan: 400, compact_suv: 400, suv: 500, luxury: 500 } as PriceMap,
+        duration: "30 min",
       },
     ],
   },
   {
     icon: Sparkles,
-    title: "Interior Detailing",
+    title: "Exterior",
     services: [
-      { name: "Basic Interior Clean", price: "₹999", duration: "1 hr" },
-      { name: "Deep Interior Detail", price: "₹2,999", duration: "3 hr" },
       {
-        name: "Leather Treatment & Conditioning",
-        price: "₹1,999",
+        name: "Exterior Detailing",
+        prices: { hatchback: 1500, sedan: 1500, compact_suv: 2000, suv: 2000, luxury: 3000 } as PriceMap,
         duration: "2 hr",
       },
       {
-        name: "Full Interior Restoration",
-        price: "₹5,999",
-        duration: "5 hr",
-      },
-    ],
-  },
-  {
-    icon: Shield,
-    title: "Ceramic Coating",
-    services: [
-      {
-        name: "Graphene Spray Coating (6 months)",
-        price: "₹4,999",
-        duration: "4 hr",
+        name: "Iron Fallout Removal",
+        prices: { hatchback: 999, sedan: 1199, compact_suv: 1499, suv: 1699, luxury: 1999 } as PriceMap,
+        duration: "1 hr",
       },
       {
-        name: "9H Ceramic Coating (2 years)",
-        price: "₹14,999",
-        duration: "8 hr",
+        name: "Tar Removal",
+        prices: { hatchback: 999, sedan: 1199, compact_suv: 1499, suv: 1699, luxury: 1999 } as PriceMap,
+        duration: "1 hr",
       },
       {
-        name: "9H Pro Ceramic (5 years)",
-        price: "₹24,999",
-        duration: "2 days",
+        name: "Water Spot Removal",
+        prices: { hatchback: 1499, sedan: 1799, compact_suv: 1999, suv: 2299, luxury: 2999 } as PriceMap,
+        duration: "1 hr",
       },
       {
-        name: "Multi-Layer Ceramic (7 years)",
-        price: "₹39,999",
-        duration: "3 days",
+        name: "Trim Restoration",
+        prices: { hatchback: 999, sedan: 1199, compact_suv: 1499, suv: 1699, luxury: 1999 } as PriceMap,
+        duration: "1 hr",
       },
     ],
   },
   {
     icon: Paintbrush,
+    title: "Paint Correction",
+    services: [
+      {
+        name: "Rubbing & Polishing",
+        prices: { hatchback: 1500, sedan: 1500, compact_suv: 2000, suv: 2000, luxury: 4000 } as PriceMap,
+        duration: "3 hr",
+      },
+    ],
+  },
+  {
+    icon: Wind,
+    title: "Interior",
+    services: [
+      {
+        name: "Interior Detailing",
+        prices: { hatchback: 1500, sedan: 1500, compact_suv: 2000, suv: 2000, luxury: 3500 } as PriceMap,
+        duration: "2 hr",
+      },
+      {
+        name: "Leather Coating",
+        prices: { hatchback: 2999, sedan: 3499, compact_suv: 3999, suv: 4499, luxury: 5999 } as PriceMap,
+        duration: "2 hr",
+      },
+      {
+        name: "Steam Cleaning",
+        prices: { hatchback: 500, sedan: 700, compact_suv: 700, suv: 1000, luxury: 1500 } as PriceMap,
+        duration: "1 hr",
+      },
+      {
+        name: "AC Vent Sanitization",
+        prices: { hatchback: 799, sedan: 999, compact_suv: 1199, suv: 1399, luxury: 1799 } as PriceMap,
+        duration: "30 min",
+      },
+      {
+        name: "Odor Removal",
+        prices: { hatchback: 999, sedan: 1199, compact_suv: 1499, suv: 1699, luxury: 1999 } as PriceMap,
+        duration: "1 hr",
+      },
+    ],
+  },
+  {
+    icon: Shield,
+    title: "Ceramic & Graphene",
+    services: [
+      {
+        name: "Ceramic Coating 9H (1 Year)",
+        prices: { hatchback: 12499, sedan: 14999, compact_suv: 17499, suv: 19999, luxury: 24999 } as PriceMap,
+        duration: "8 hr",
+      },
+      {
+        name: "Ceramic Coating 10H (2 Year)",
+        prices: { hatchback: 16499, sedan: 18999, compact_suv: 21499, suv: 23999, luxury: 29999 } as PriceMap,
+        duration: "8 hr",
+      },
+      {
+        name: "Graphene Coating",
+        prices: { hatchback: 22499, sedan: 24999, compact_suv: 28499, suv: 32999, luxury: 35999 } as PriceMap,
+        duration: "2 days",
+      },
+    ],
+  },
+  {
+    icon: Car,
     title: "Paint Protection Film",
     services: [
       {
-        name: "High Impact Areas (Front)",
-        price: "₹29,999",
-        duration: "1 day",
-      },
-      { name: "Half Body PPF", price: "₹59,999", duration: "2 days" },
-      {
-        name: "Full Body PPF (Glossy)",
-        price: "₹99,999",
+        name: "PPF Full Body (5 Year)",
+        prices: { hatchback: 60000, sedan: 70000, compact_suv: 70000, suv: 80000, luxury: 90000 } as PriceMap,
         duration: "3 days",
       },
       {
-        name: "Full Body PPF (Matte)",
-        price: "₹1,19,999",
+        name: "PPF Full Body (10 Year)",
+        prices: { hatchback: 80000, sedan: 90000, compact_suv: 90000, suv: 100000, luxury: 100000 } as PriceMap,
+        duration: "3 days",
+      },
+      {
+        name: "Matt PPF (5 Year)",
+        prices: { hatchback: 65000, sedan: 75000, compact_suv: 75000, suv: 85000, luxury: 95000 } as PriceMap,
         duration: "3 days",
       },
     ],
   },
   {
     icon: Wrench,
-    title: "Engine & Mechanical",
+    title: "Engine & Underbody",
     services: [
       {
-        name: "Engine Bay Degrease & Detail",
-        price: "₹1,999",
-        duration: "1.5 hr",
-      },
-      {
-        name: "Underbody Anti-Rust Coating",
-        price: "₹3,999",
+        name: "Underbody Coating",
+        prices: { hatchback: 2000, sedan: 2000, compact_suv: 2000, suv: 2000, luxury: null } as PriceMap,
         duration: "3 hr",
       },
-      { name: "AC Vent Sanitization", price: "₹799", duration: "30 min" },
     ],
   },
   {
     icon: Lightbulb,
-    title: "Headlight & Glass",
+    title: "Glass",
     services: [
       {
-        name: "Headlight Restoration",
-        price: "₹1,499",
-        duration: "1 hr",
-      },
-      {
-        name: "Windshield Ceramic Coat",
-        price: "₹1,999",
-        duration: "1 hr",
-      },
-      {
-        name: "Full Glass Treatment",
-        price: "₹2,999",
+        name: "Glass Coating",
+        prices: { hatchback: 1000, sedan: 1000, compact_suv: 1000, suv: 1000, luxury: 1000 } as PriceMap,
         duration: "2 hr",
       },
     ],
   },
   {
-    icon: Wind,
-    title: "Odor & Sanitization",
+    icon: Sparkles,
+    title: "Lighting",
     services: [
-      { name: "Ozone Treatment", price: "₹1,499", duration: "1 hr" },
       {
-        name: "Full Cabin Sanitization",
-        price: "₹999",
-        duration: "45 min",
-      },
-      {
-        name: "Smoke & Pet Odor Removal",
-        price: "₹2,499",
-        duration: "2 hr",
+        name: "Headlight Restoration",
+        prices: { hatchback: 799, sedan: 999, compact_suv: 1199, suv: 1399, luxury: 1799 } as PriceMap,
+        duration: "1 hr",
       },
     ],
   },
   {
     icon: Car,
-    title: "Pickup & Delivery",
+    title: "Wheel & Tire",
     services: [
       {
-        name: "Vehicle Pickup (within 10 km)",
-        price: "FREE*",
-        duration: "—",
+        name: "Alloy Wheel Coating",
+        prices: { hatchback: 399, sedan: 499, compact_suv: 599, suv: 699, luxury: 899 } as PriceMap,
+        duration: "2 hr",
+      },
+    ],
+  },
+  {
+    icon: Sparkles,
+    title: "Packages",
+    services: [
+      {
+        name: "Full Car Detailing",
+        prices: { hatchback: 4999, sedan: 5999, compact_suv: 6999, suv: 7999, luxury: 9999 } as PriceMap,
+        duration: "1 day",
       },
       {
-        name: "Vehicle Pickup (10-25 km)",
-        price: "₹499",
-        duration: "—",
-      },
-      {
-        name: "Priority Same-Day Pickup",
-        price: "₹999",
-        duration: "—",
+        name: "New Car Protection Package",
+        prices: { hatchback: 14999, sedan: 16999, compact_suv: 18999, suv: 21999, luxury: 27999 } as PriceMap,
+        duration: "2 days",
       },
     ],
   },
 ];
 
-// ─── Page component ───────────────────────────────────────────────────────────
+// ─── Page component ────────────────────────────────────────────────────────────────────────────────────
 
 export default function CarServicePage() {
   const params = useParams();
@@ -249,7 +274,7 @@ export default function CarServicePage() {
     notFound();
   }
 
-  const { multiplier, model, label, tagline, image } = car;
+  const { model, label, tagline, image } = car;
 
   return (
     <div className="pb-24">
@@ -307,11 +332,9 @@ export default function CarServicePage() {
                 {/* Service rows */}
                 <div className="divide-y divide-border">
                   {category.services.map((service) => {
-                    const displayPrice = applyMultiplier(
-                      service.price,
-                      multiplier
-                    );
-                    const isFree = displayPrice === "FREE*";
+                    const price = service.prices[carTypeId as CarTypeId];
+                    const displayPrice = formatPrice(price);
+                    const isNA = price === null;
                     return (
                       <div
                         key={service.name}
@@ -321,17 +344,15 @@ export default function CarServicePage() {
                           <p className="text-sm font-medium text-foreground">
                             {service.name}
                           </p>
-                          {service.duration !== "—" && (
-                            <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
-                              <Clock className="h-3 w-3" />
-                              {service.duration}
-                            </p>
-                          )}
+                          <p className="text-xs text-muted-foreground flex items-center gap-1 mt-0.5">
+                            <Clock className="h-3 w-3" />
+                            {service.duration}
+                          </p>
                         </div>
                         <span
                           className={
                             "text-sm font-bold shrink-0 ml-4 " +
-                            (isFree ? "text-emerald-400" : "text-primary")
+                            (isNA ? "text-muted-foreground" : "text-primary")
                           }
                         >
                           {displayPrice}
@@ -348,7 +369,7 @@ export default function CarServicePage() {
         {/* CTA */}
         <div className="text-center mt-14">
           <p className="text-sm text-muted-foreground mb-4">
-            * Prices are approximate. Free pickup on orders above ₹5,000.
+            * Prices are indicative. Free pickup on orders above ₹5,000.
           </p>
           <Link href="/booking">
             <Button size="xl">{"Book For " + model}</Button>
