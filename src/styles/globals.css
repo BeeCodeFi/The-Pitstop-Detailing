@@ -133,6 +133,14 @@ a, button, [role="button"], select, input, textarea {
   border: 1px solid var(--color-border);
 }
 
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
 .noise-bg {
   position: relative;
 }
