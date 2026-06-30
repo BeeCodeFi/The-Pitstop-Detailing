@@ -93,6 +93,7 @@ providers.push(
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...(prisma ? { adapter: PrismaAdapter(prisma) } : {}),
+  trustHost: true,
   session: { strategy: "jwt" },
   pages: {
     signIn: "/login",
