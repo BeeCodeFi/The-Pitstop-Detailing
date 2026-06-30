@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Eye, EyeOff, Shield } from "lucide-react";
 
+const ADMIN_EMAIL = "thepitstopdetailingstudio@gmail.com";
+
 export default function AdminLoginPage() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
@@ -17,8 +19,15 @@ export default function AdminLoginPage() {
     setError("");
 
     const formData = new FormData(e.currentTarget);
-    const email = formData.get("email") as string;
+    const email = (formData.get("email") as string).trim().toLowerCase();
     const password = formData.get("password") as string;
+
+    // Block non-admin emails immediately — no DB call
+    if (email !== ADMIN_EMAIL) {
+      setError("This portal is restricted to authorized administrators only.");
+      setIsLoading(false);
+      return;
+    }
 
     try {
       const result = await signIn("credentials", {
@@ -30,12 +39,6 @@ export default function AdminLoginPage() {
       if (result?.error) {
         setError("Invalid admin credentials.");
       } else {
-        // Verify it's actually an admin by checking the session
-        const res = await fetch("/api/admin/stats");
-        if (res.status === 403) {
-          setError("Access denied. Admin privileges required.");
-          return;
-        }
         router.push("/admin");
         router.refresh();
       }
@@ -75,8 +78,7 @@ export default function AdminLoginPage() {
                 autoComplete="email"
                 placeholder="admin@thepitstopdetailing.com"
                 className="flex h-10 w-full rounded-md border border-gray-700 bg-gray-800 px-3 text-sm text-white placeholder:text-gray-500 focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary"
-              />
-            </div>
+              />            </div>
             <div className="space-y-1.5 relative">
               <label htmlFor="password" className="block text-xs font-medium text-gray-400">Password</label>
               <input

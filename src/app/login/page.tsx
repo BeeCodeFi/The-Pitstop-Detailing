@@ -3,13 +3,15 @@
 import { motion } from "framer-motion";
 import { useState, type FormEvent } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { Button, Input } from "@/components/ui";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState("");
@@ -33,7 +35,7 @@ export default function LoginPage() {
       if (result?.error) {
         setError("Invalid email or password. Please try again.");
       } else {
-        router.push("/dashboard");
+        router.push(callbackUrl);
         router.refresh();
       }
     } catch {
@@ -44,7 +46,7 @@ export default function LoginPage() {
   }
 
   async function handleGoogleSignIn() {
-    await signIn("google", { callbackUrl: "/dashboard" });
+    await signIn("google", { callbackUrl });
   }
 
   return (

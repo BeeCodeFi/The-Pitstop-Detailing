@@ -12,13 +12,19 @@ export async function middleware(req: NextRequest) {
   const isLoggedIn = !!token;
   const userRole = token?.role as string | undefined;
 
-  // Protect admin routes (except admin login page)
-  // TODO: Re-enable before production
-  // if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
-  //   if (!isLoggedIn || userRole !== "ADMIN") {
-  //     return NextResponse.redirect(new URL("/admin/login", req.nextUrl));
-  //   }
-  // }
+  // Protect admin routes — only ADMIN role may access (except admin login page)
+  if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
+    if (!isLoggedIn || userRole !== "ADMIN") {
+      return NextResponse.redirect(new URL("/admin/login", req.nextUrl));
+    }
+  }
+
+  // Protect customer routes that require login
+  if (pathname.startsWith("/booking") || pathname.startsWith("/dashboard")) {
+    if (!isLoggedIn) {
+      return NextResponse.redirect(new URL(`/login?callbackUrl=${encodeURIComponent(pathname)}`, req.nextUrl));
+    }
+  }
 
   return response;
 }

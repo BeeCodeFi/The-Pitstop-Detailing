@@ -3,7 +3,10 @@ import { PrismaAdapter } from "@auth/prisma-adapter";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
 import bcryptjs from "bcryptjs";
+import { timingSafeEqual } from "crypto";
 import { prisma } from "@/lib/prisma";
+
+const ADMIN_EMAIL = "thepitstopdetailingstudio@gmail.com";
 
 // Build provider list — only include Google OAuth when credentials are configured
 const providers = [];
@@ -26,22 +29,52 @@ providers.push(
     },
     async authorize(credentials) {
       if (!credentials?.email || !credentials?.password) return null;
-
-      // Guard against missing DB connection
       if (!prisma) return null;
 
-      try {
-        const user = await prisma.user.findUnique({
-          where: { email: credentials.email as string },
-        });
+      const email = credentials.email as string;
+      const password = credentials.password as string;
 
+      try {
+        // ── Admin fast-path ───────────────────────────────────────────────────
+        // Only the fixed admin email can log in through here.
+        // Password is compared against ADMIN_PASSWORD env var (timing-safe).
+        if (email === ADMIN_EMAIL) {
+          const adminPassword = process.env.ADMIN_PASSWORD;
+          if (!adminPassword) return null;
+
+          const inputBuf = Buffer.from(password);
+          const expectedBuf = Buffer.from(adminPassword);
+          const match =
+            inputBuf.length === expectedBuf.length &&
+            timingSafeEqual(inputBuf, expectedBuf);
+          if (!match) return null;
+
+          // Auto-upsert the admin user so they always have the ADMIN role
+          const adminUser = await prisma.user.upsert({
+            where: { email: ADMIN_EMAIL },
+            update: { role: "ADMIN" },
+            create: {
+              email: ADMIN_EMAIL,
+              name: "The Pitstop Admin",
+              role: "ADMIN",
+              password: await bcryptjs.hash(adminPassword, 12),
+            },
+          });
+
+          return {
+            id: adminUser.id,
+            name: adminUser.name,
+            email: adminUser.email,
+            image: adminUser.image,
+            role: "ADMIN" as string,
+          };
+        }
+
+        // ── Regular customer login ────────────────────────────────────────────
+        const user = await prisma.user.findUnique({ where: { email } });
         if (!user || !user.password) return null;
 
-        const isValid = await bcryptjs.compare(
-          credentials.password as string,
-          user.password
-        );
-
+        const isValid = await bcryptjs.compare(password, user.password);
         if (!isValid) return null;
 
         return {
