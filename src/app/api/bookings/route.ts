@@ -13,6 +13,12 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Fetch user details (including phone for WhatsApp notification)
+    const user = await prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { phone: true, name: true, email: true },
+    });
+
     const body = await request.json();
     const parsed = bookingSchema.safeParse(body);
 
@@ -75,6 +81,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Invalid service or vehicle type combo" }, { status: 400 });
     }
 
+    const fullServiceName = getServiceName(serviceId);
+
     // Create booking
     const booking = await prisma.booking.create({
       data: {
@@ -82,6 +90,8 @@ export async function POST(request: Request) {
         vehicleId: userVehicle.id,
         timeSlotId: slot.id,
         totalAmount: resolvedPrice,
+        serviceCatalogId: serviceId,
+        serviceName: fullServiceName,
         notes: notes || null,
         status: "PENDING",
       },
@@ -106,19 +116,19 @@ export async function POST(request: Request) {
       });
     }
 
-    // Send notifications (Email & WhatsApp)
+    // Send notifications (Email & WhatsApp to business + customer)
     try {
-      const fullServiceName = getServiceName(serviceId);
       const vehicleDesc = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
       await notifyNewBooking({
-        customerName: session.user.name || "Customer",
-        customerEmail: session.user.email || "",
+        customerName: user?.name || session.user.name || "Customer",
+        customerEmail: user?.email || session.user.email || "",
+        customerPhone: user?.phone || undefined,
         service: fullServiceName,
         vehicle: vehicleDesc,
         date: date,
         timeSlot: timeSlot,
         pickupAddress: needsPickup && pickup ? `${pickup.address}, ${pickup.city} - ${pickup.pincode}` : undefined,
-        totalAmount: resolvedPrice,
+        estimatedAmount: resolvedPrice / 100, // convert paise → INR for display
         bookingId: booking.id,
       });
     } catch (notifyErr) {

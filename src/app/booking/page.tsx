@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button, Input, Card } from "@/components/ui";
 import {
   ArrowLeft, ArrowRight, Check, Car, Calendar, MapPin,
-  CreditCard, Sparkles, AlertCircle, CheckCircle2, Clock, Info,
+  MessageCircle, Sparkles, AlertCircle, CheckCircle2, Clock, Info,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -77,7 +77,7 @@ const steps = [
   { id: 2, label: "Service",  icon: Sparkles },
   { id: 3, label: "Schedule", icon: Calendar },
   { id: 4, label: "Pickup",   icon: MapPin },
-  { id: 5, label: "Confirm",  icon: CreditCard },
+  { id: 5, label: "Enquiry",  icon: MessageCircle },
 ];
 
 const initialState = {
@@ -175,7 +175,7 @@ export default function BookingPage() {
         setBookingResult({ success: false, message: json.error || "Booking failed" });
         return;
       }
-      setBookingResult({ success: true, message: "Booking confirmed! We will send you a confirmation shortly.", bookingId: json.booking?.id });
+      setBookingResult({ success: true, message: "Booking enquiry submitted! Our team will reach out on WhatsApp to confirm your appointment and final pricing.", bookingId: json.booking?.id });
     } catch { setBookingResult({ success: false, message: "Something went wrong. Please try again." }); }
     finally { setIsSubmitting(false); }
   };
@@ -188,7 +188,7 @@ export default function BookingPage() {
             <div className={cn("h-20 w-20 rounded-full mx-auto mb-6 flex items-center justify-center", bookingResult.success ? "bg-success/10" : "bg-error/10")}>
               {bookingResult.success ? <CheckCircle2 className="h-10 w-10 text-success" /> : <AlertCircle className="h-10 w-10 text-error" />}
             </div>
-            <h1 className="font-heading text-3xl text-foreground mb-3">{bookingResult.success ? "BOOKING CONFIRMED!" : "BOOKING FAILED"}</h1>
+            <h1 className="font-heading text-3xl text-foreground mb-3">{bookingResult.success ? "ENQUIRY SUBMITTED!" : "SUBMISSION FAILED"}</h1>
             <p className="text-muted-foreground mb-2">{bookingResult.message}</p>
             {bookingResult.bookingId && <p className="text-xs text-muted-foreground mb-8">Booking ID: <span className="font-mono text-primary">{bookingResult.bookingId}</span></p>}
             <div className="flex gap-3 justify-center">
@@ -362,12 +362,12 @@ export default function BookingPage() {
               </div>
             )}
 
-            {/* Step 5: Confirm */}
+            {/* Step 5: Enquiry */}
             {currentStep === 5 && (
               <div className="space-y-4">
-                <h2 className="text-lg font-bold text-foreground">Confirm &amp; Pay</h2>
+                <h2 className="text-lg font-bold text-foreground">Review &amp; Submit Enquiry</h2>
                 <Card hover={false}>
-                  <div className="space-y-3 mb-6">
+                  <div className="space-y-3 mb-4">
                     <div className="flex justify-between items-start gap-3 text-sm"><span className="text-muted-foreground shrink-0">Vehicle Type</span><span className="text-foreground font-medium text-right">{selectedVehicle ? selectedVehicle.label : "—"}</span></div>
                     <div className="flex justify-between items-start gap-3 text-sm"><span className="text-muted-foreground shrink-0">Vehicle</span><span className="text-foreground font-medium text-right">{booking.vehicle.make && booking.vehicle.model ? booking.vehicle.year + " " + booking.vehicle.make + " " + booking.vehicle.model : "\u2014"}</span></div>
                     <div className="flex justify-between items-start gap-3 text-sm"><span className="text-muted-foreground shrink-0">Service</span><span className="text-foreground font-medium text-right">{selectedService?.name || "—"}</span></div>
@@ -375,7 +375,15 @@ export default function BookingPage() {
                     <div className="flex justify-between items-start gap-3 text-sm"><span className="text-muted-foreground shrink-0">Date &amp; Time</span><span className="text-foreground font-medium text-right">{booking.date && booking.timeSlot ? new Date(booking.date).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" }) + " at " + booking.timeSlot : "—"}</span></div>
                     <div className="flex justify-between items-start gap-3 text-sm"><span className="text-muted-foreground shrink-0">Delivery</span><span className="text-foreground font-medium text-right">{booking.needsPickup ? "Pickup & Delivery" : "Self Drop-off"}</span></div>
                     {booking.needsPickup && booking.pickup.address && (<div className="flex justify-between items-start gap-3 text-sm"><span className="text-muted-foreground shrink-0">Pickup From</span><span className="text-foreground font-medium text-right max-w-[55%]">{booking.pickup.address}, {booking.pickup.city} - {booking.pickup.pincode}</span></div>)}
-                    <div className="border-t border-border pt-3 flex justify-between"><span className="font-bold text-foreground">Total</span><span className="font-bold text-primary text-lg">{servicePrice !== null && servicePrice !== undefined ? formatPrice(servicePrice) : "—"}</span></div>
+                    <div className="border-t border-border pt-3 flex justify-between items-center">
+                      <span className="font-bold text-foreground">Est. Starting Price*</span>
+                      <span className="font-bold text-primary text-lg">{servicePrice !== null && servicePrice !== undefined ? formatPrice(servicePrice) : "—"}</span>
+                    </div>
+                  </div>
+                  {/* Price disclaimer */}
+                  <div className="flex gap-2.5 p-3 rounded-lg bg-primary/5 border border-primary/20 mb-4">
+                    <Info className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                    <p className="text-xs text-primary/90 leading-relaxed"><span className="font-semibold">Pricing note:</span> Final price depends on vehicle size, condition, and selected service. Our team will confirm the exact quote via WhatsApp before service begins.</p>
                   </div>
                   <div className="space-y-1.5 mb-4">
                     <label htmlFor="notes" className="block text-sm font-medium text-muted-foreground">Special Instructions (optional)</label>
@@ -384,9 +392,9 @@ export default function BookingPage() {
                   <Button size="lg" className="w-full" onClick={handleSubmitBooking} disabled={isSubmitting}>
                     {isSubmitting
                       ? <div className="h-5 w-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                      : <><CreditCard className="h-4 w-4" /> Confirm &amp; Pay {servicePrice !== null && servicePrice !== undefined ? formatPrice(servicePrice) : ""}</>}
+                      : <><MessageCircle className="h-4 w-4" /> Submit Booking Enquiry</>}
                   </Button>
-                  <p className="text-xs text-muted-foreground text-center mt-3">Secure payment via Razorpay — UPI, Cards, Wallets &amp; Netbanking</p>
+                  <p className="text-xs text-muted-foreground text-center mt-3">No payment required — we&apos;ll confirm your appointment &amp; pricing via WhatsApp within 2 hours.</p>
                 </Card>
               </div>
             )}

@@ -30,12 +30,20 @@ export async function sendEmail({
 
 // ─── WhatsApp via Meta Cloud API ───────────────────────────────────────────────
 
-export async function sendWhatsApp(message: string) {
+/** Normalise an Indian phone number to E.164 (e.g. "919876543210"). Returns null if it cannot be determined. */
+function normalisePhone(phone: string): string | null {
+  const digits = phone.replace(/\D/g, "");
+  if (digits.length === 10) return `91${digits}`;
+  if (digits.length === 12 && digits.startsWith("91")) return digits;
+  if (digits.length === 11 && digits.startsWith("0")) return `91${digits.slice(1)}`;
+  return null;
+}
+
+async function dispatchWhatsApp(to: string, message: string) {
   const token = process.env.WHATSAPP_API_TOKEN;
   const phoneNumberId = process.env.WHATSAPP_PHONE_NUMBER_ID;
-  const to = process.env.WHATSAPP_BUSINESS_NUMBER; // your business WhatsApp number in E.164 format e.g. 919876543210
 
-  if (!token || !phoneNumberId || !to) {
+  if (!token || !phoneNumberId) {
     console.warn("[notify] WhatsApp env vars not set — WhatsApp skipped");
     return;
   }
@@ -61,53 +69,83 @@ export async function sendWhatsApp(message: string) {
   }
 }
 
-// ─── Booking Confirmation ──────────────────────────────────────────────────────
+/** Send a WhatsApp message to the business WhatsApp inbox. */
+export async function sendWhatsApp(message: string) {
+  const to = process.env.WHATSAPP_BUSINESS_NUMBER;
+  if (!to) {
+    console.warn("[notify] WHATSAPP_BUSINESS_NUMBER not set — business WhatsApp skipped");
+    return;
+  }
+  await dispatchWhatsApp(to, message);
+}
+
+/**
+ * Send a WhatsApp message to a specific phone number (e.g. customer confirmation).
+ * NOTE: The WhatsApp Cloud API requires an approved message template for proactive
+ * outbound messages (outside a 24-hour customer-service window). Ensure a template
+ * is approved in Meta Business Manager, or use this within the 24-hour window.
+ */
+export async function sendWhatsAppTo(phone: string, message: string) {
+  const normalised = normalisePhone(phone);
+  if (!normalised) {
+    console.warn(`[notify] Could not normalise phone "${phone}" to E.164 — customer WhatsApp skipped`);
+    return;
+  }
+  await dispatchWhatsApp(normalised, message);
+}
+
+// ─── Booking Enquiry Notification ─────────────────────────────────────────────
 
 export async function notifyNewBooking({
   customerName,
   customerEmail,
+  customerPhone,
   service,
   vehicle,
   date,
   timeSlot,
   pickupAddress,
-  totalAmount,
+  estimatedAmount,
   bookingId,
 }: {
   customerName: string;
   customerEmail: string;
+  customerPhone?: string;
   service: string;
   vehicle: string;
   date: string;
   timeSlot: string;
   pickupAddress?: string;
-  totalAmount: number;
+  estimatedAmount: number;
   bookingId: string;
 }) {
-  const formattedAmount = `₹${(totalAmount / 100).toLocaleString("en-IN")}`;
+  const formattedAmount = `₹${estimatedAmount.toLocaleString("en-IN")} (est. starting price)`;
   const pickup = pickupAddress ? `Pickup: ${pickupAddress}` : "Drop-off at studio";
+  const shortId = bookingId.slice(-8).toUpperCase();
 
   // Email to customer
   await sendEmail({
     to: customerEmail,
-    subject: "Booking Confirmed — The Pitstop Detailing",
+    subject: "Booking Enquiry Received — The Pitstop Detailing",
     html: `
       <div style="font-family:sans-serif;max-width:560px;margin:auto;background:#0a0a0a;color:#fff;border-radius:12px;overflow:hidden">
         <div style="background:#e31b23;padding:24px 32px">
           <h1 style="margin:0;font-size:22px;font-weight:800;letter-spacing:1px">THE PITSTOP DETAILING</h1>
-          <p style="margin:4px 0 0;opacity:.8;font-size:13px">Booking Confirmation</p>
+          <p style="margin:4px 0 0;opacity:.8;font-size:13px">Booking Enquiry Received</p>
         </div>
         <div style="padding:32px">
-          <p style="margin:0 0 24px">Hi <strong>${customerName}</strong>, your booking is confirmed! 🎉</p>
+          <p style="margin:0 0 24px">Hi <strong>${customerName}</strong>, we've received your booking enquiry! 🚗</p>
+          <p style="margin:0 0 20px;font-size:14px;color:#bbb">Our team will review your request and reach out on WhatsApp within 2 hours to confirm your appointment and final pricing.</p>
           <table style="width:100%;border-collapse:collapse;font-size:14px">
-            <tr><td style="padding:8px 0;color:#999;width:40%">Booking ID</td><td style="padding:8px 0;font-family:monospace;color:#e31b23">${bookingId.slice(-8).toUpperCase()}</td></tr>
+            <tr><td style="padding:8px 0;color:#999;width:40%">Enquiry ID</td><td style="padding:8px 0;font-family:monospace;color:#e31b23">${shortId}</td></tr>
             <tr><td style="padding:8px 0;color:#999">Service</td><td style="padding:8px 0">${service}</td></tr>
             <tr><td style="padding:8px 0;color:#999">Vehicle</td><td style="padding:8px 0">${vehicle}</td></tr>
-            <tr><td style="padding:8px 0;color:#999">Date & Time</td><td style="padding:8px 0">${date} at ${timeSlot}</td></tr>
+            <tr><td style="padding:8px 0;color:#999">Date &amp; Time</td><td style="padding:8px 0">${date} at ${timeSlot}</td></tr>
             <tr><td style="padding:8px 0;color:#999">Delivery</td><td style="padding:8px 0">${pickup}</td></tr>
-            <tr><td style="padding:8px 0;color:#999;border-top:1px solid #222">Total</td><td style="padding:8px 0;font-weight:800;font-size:18px;color:#e31b23;border-top:1px solid #222">${formattedAmount}</td></tr>
+            <tr><td style="padding:8px 0;color:#999;border-top:1px solid #222">Est. Starting Price</td><td style="padding:8px 0;font-weight:800;font-size:16px;color:#e31b23;border-top:1px solid #222">${formattedAmount}</td></tr>
           </table>
-          <p style="margin:24px 0 0;font-size:13px;color:#666">Questions? Reply to this email or WhatsApp us at the number on our website.</p>
+          <p style="margin:16px 0 0;font-size:12px;color:#666;font-style:italic">* Final price depends on vehicle size, condition, and selected service. Our team will confirm the exact quote before service begins.</p>
+          <p style="margin:16px 0 0;font-size:13px;color:#666">Questions? Reply to this email or WhatsApp us at the number on our website.</p>
         </div>
       </div>
     `,
@@ -116,32 +154,54 @@ export async function notifyNewBooking({
   // Email alert to business
   await sendEmail({
     to: BUSINESS_EMAIL,
-    subject: `New Booking — ${service} (${date})`,
+    subject: `New Booking Enquiry — ${service} (${date})`,
     html: `
       <div style="font-family:sans-serif;max-width:560px;margin:auto">
-        <h2 style="color:#e31b23">New Booking Alert 🚗</h2>
-        <p><strong>Customer:</strong> ${customerName} (${customerEmail})</p>
+        <h2 style="color:#e31b23">New Booking Enquiry 🚗</h2>
+        <p><strong>Customer:</strong> ${customerName} (${customerEmail})${customerPhone ? ` | 📱 ${customerPhone}` : ""}</p>
         <p><strong>Service:</strong> ${service}</p>
         <p><strong>Vehicle:</strong> ${vehicle}</p>
         <p><strong>Date:</strong> ${date} at ${timeSlot}</p>
         <p><strong>Delivery:</strong> ${pickup}</p>
-        <p><strong>Amount:</strong> ${formattedAmount}</p>
-        <p><strong>Booking ID:</strong> ${bookingId}</p>
+        <p><strong>Est. Starting Price:</strong> ${formattedAmount}</p>
+        <p><strong>Enquiry ID:</strong> ${shortId}</p>
+        <p style="color:#888;font-size:12px">Final price should be confirmed with the customer before service begins.</p>
       </div>
     `,
   });
 
   // WhatsApp alert to business
   await sendWhatsApp(
-    `🚗 *New Booking — The Pitstop*\n\n` +
+    `🚗 *New Booking Enquiry — The Pitstop*\n\n` +
     `*Customer:* ${customerName}\n` +
+    `*Phone:* ${customerPhone || "N/A"}\n` +
+    `*Email:* ${customerEmail}\n` +
     `*Service:* ${service}\n` +
     `*Vehicle:* ${vehicle}\n` +
     `*Date:* ${date} at ${timeSlot}\n` +
     `*${pickup}*\n` +
-    `*Amount:* ${formattedAmount}\n` +
-    `*ID:* ${bookingId.slice(-8).toUpperCase()}`
+    `*Est. Starting:* ${formattedAmount}\n` +
+    `*ID:* ${shortId}\n\n` +
+    `_Please confirm pricing & appointment with the customer._`
   );
+
+  // WhatsApp confirmation to customer
+  if (customerPhone) {
+    await sendWhatsAppTo(
+      customerPhone,
+      `Hi ${customerName}! 👋\n\n` +
+      `We've received your booking enquiry at *The Pitstop Detailing*.\n\n` +
+      `📋 *Enquiry Details*\n` +
+      `Service: ${service}\n` +
+      `Vehicle: ${vehicle}\n` +
+      `Date: ${date} at ${timeSlot}\n` +
+      `Delivery: ${pickup}\n` +
+      `Est. Starting Price: ${formattedAmount}\n\n` +
+      `Our team will reach out to you shortly to confirm your appointment and final pricing.\n\n` +
+      `_Final price depends on vehicle size, condition, and selected service._\n\n` +
+      `Ref: #${shortId}`
+    );
+  }
 }
 
 // ─── Contact Form Notification ─────────────────────────────────────────────────

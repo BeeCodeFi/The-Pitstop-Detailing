@@ -13,9 +13,9 @@ interface Booking {
   timeSlot: string;
   status: string;
   totalAmount: number;
+  serviceName?: string;
   notes?: string;
   vehicle: { make: string; model: string; year: number; color?: string };
-  services: { service: { name: string } }[];
 }
 
 export default function DashboardPage() {
@@ -155,7 +155,7 @@ export default function DashboardPage() {
                   <div className="flex items-start justify-between">
                     <div className="space-y-1">
                       <p className="font-semibold text-foreground text-sm">
-                        {booking.services?.[0]?.service?.name || "Service"}
+                        {booking.serviceName || "Detailing Service"}
                       </p>
                       <p className="text-xs text-muted-foreground">
                         {booking.vehicle.year} {booking.vehicle.make} {booking.vehicle.model}
@@ -176,6 +176,7 @@ export default function DashboardPage() {
                       <span className={`inline-block px-2 py-0.5 rounded-full text-xs font-medium border ${statusColors[booking.status] || statusColors.PENDING}`}>
                         {booking.status.replace("_", " ")}
                       </span>
+                      <p className="text-xs text-muted-foreground">Est. from</p>
                       <p className="text-sm font-bold text-primary">
                         ₹{(booking.totalAmount / 100).toLocaleString("en-IN")}
                       </p>

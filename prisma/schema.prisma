@@ -223,7 +223,9 @@ model Booking {
   packageId   String?
   staffId     String?
   status      BookingStatus @default(PENDING)
-  totalAmount Int           // in paise
+  totalAmount Int           // in paise (estimated starting price)
+  serviceCatalogId String?  // catalog key e.g. "foam-wash"
+  serviceName String?       // human-readable service name
   notes       String?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @updatedAt
