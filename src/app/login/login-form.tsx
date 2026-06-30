@@ -8,13 +8,26 @@ import { signIn } from "next-auth/react";
 import { Button, Input } from "@/components/ui";
 import { Eye, EyeOff, LogIn } from "lucide-react";
 
+const AUTH_ERRORS: Record<string, string> = {
+  OAuthCallback: "Google sign-in failed. Please try again.",
+  OAuthAccountNotLinked: "This email is already registered with a password. Sign in with email instead.",
+  OAuthSignin: "Could not start Google sign-in. Check that the redirect URI is configured in Google Cloud Console.",
+  Callback: "Authentication callback error. Please try again.",
+  AccessDenied: "Access denied.",
+  Configuration: "Server configuration error — contact support.",
+  Default: "Sign-in failed. Please try again.",
+};
+
 export function LoginForm({ googleEnabled }: { googleEnabled: boolean }) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const callbackUrl = searchParams.get("callbackUrl") || "/dashboard";
+  const authError = searchParams.get("error");
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [error, setError] = useState("");
+  const [error, setError] = useState(
+    authError ? (AUTH_ERRORS[authError] ?? AUTH_ERRORS.Default) : ""
+  );
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
