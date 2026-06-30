@@ -4,9 +4,10 @@ import { NextResponse, type NextRequest } from "next/server";
 export async function proxy(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // Set pathname header for root layout to detect admin routes
-  const response = NextResponse.next();
-  response.headers.set("x-pathname", pathname);
+  // Forward pathname as a request header so server components (root layout) can read it
+  const requestHeaders = new Headers(req.headers);
+  requestHeaders.set("x-pathname", pathname);
+  const response = NextResponse.next({ request: { headers: requestHeaders } });
 
   const token = await getToken({ req, secret: process.env.AUTH_SECRET });
   const isLoggedIn = !!token;

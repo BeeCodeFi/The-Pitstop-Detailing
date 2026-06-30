@@ -35,7 +35,7 @@ export const vehicleSchema = z.object({
     .max(new Date().getFullYear() + 1),
   color: z.string().max(30).optional(),
   plateNumber: z.string().max(20).optional(),
-  vehicleType: z.enum(["hatchback", "sedan", "suv", "luxury", "bike"]),
+  vehicleType: z.enum(["hatchback", "sedan", "compact_suv", "suv", "luxury", "bike"]),
 });
 
 // ─── BOOKING ────────────────────────────────────────────────────────────────────
