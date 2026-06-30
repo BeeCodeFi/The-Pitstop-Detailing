@@ -45,5 +45,21 @@ export const authConfig = {
 
       return true;
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    jwt({ token, user }: { token: any; user?: any }) {
+      if (user) {
+        token.role = user.role ?? "CUSTOMER";
+        token.id = user.id;
+      }
+      return token;
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    session({ session, token }: { session: any; token: any }) {
+      if (session.user) {
+        session.user.id = token.id;
+        session.user.role = token.role;
+      }
+      return session;
+    },
   },
 } satisfies NextAuthConfig;
