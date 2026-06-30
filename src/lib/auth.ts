@@ -100,10 +100,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   providers,
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, account }) {
       if (user) {
-        token.role = (user as { role: string }).role;
+        // credentials provider returns role directly
+        token.role = (user as { role?: string }).role ?? "CUSTOMER";
         token.id = user.id;
+      }
+      // For OAuth (e.g. Google), the user object from NextAuth doesn't carry
+      // DB custom fields like `role`. Fetch from DB on first OAuth sign-in.
+      if (account && account.provider !== "credentials" && token.email && !token.role) {
+        try {
+          const dbUser = await prisma?.user.findUnique({
+            where: { email: token.email as string },
+            select: { id: true, role: true },
+          });
+          if (dbUser) {
+            token.role = dbUser.role;
+            token.id = dbUser.id;
+          }
+        } catch { /* non-fatal */ }
       }
       return token;
     },
