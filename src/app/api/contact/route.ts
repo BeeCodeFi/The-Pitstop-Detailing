@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { contactSchema } from "@/lib/validators";
+import { notifyContactForm } from "@/lib/notify";
 
 export async function POST(request: Request) {
   try {
@@ -13,9 +14,20 @@ export async function POST(request: Request) {
       );
     }
 
-    // In production: save to DB, send email via Resend, notify via WhatsApp
-    // For now, log and return success
-    console.log("Contact form submission:", parsed.data);
+    // Log contact submission
+    console.log("Contact form submission received:", parsed.data);
+
+    // Trigger Email & WhatsApp notifications
+    try {
+      await notifyContactForm({
+        name: parsed.data.name,
+        email: parsed.data.email,
+        phone: parsed.data.phone || undefined,
+        message: parsed.data.message,
+      });
+    } catch (notifyErr) {
+      console.error("[contact] Failed to send contact notifications:", notifyErr);
+    }
 
     return NextResponse.json(
       { message: "Message received! We'll get back to you within 24 hours." },

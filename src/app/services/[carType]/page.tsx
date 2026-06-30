@@ -245,22 +245,6 @@ const CATEGORIES = [
       },
     ],
   },
-  {
-    icon: Sparkles,
-    title: "Packages",
-    services: [
-      {
-        name: "Full Car Detailing",
-        prices: { hatchback: 4999, sedan: 5999, compact_suv: 6999, suv: 7999, luxury: 9999 } as PriceMap,
-        duration: "1 day",
-      },
-      {
-        name: "New Car Protection Package",
-        prices: { hatchback: 14999, sedan: 16999, compact_suv: 18999, suv: 21999, luxury: 27999 } as PriceMap,
-        duration: "2 days",
-      },
-    ],
-  },
 ];
 
 // ─── Page component ────────────────────────────────────────────────────────────────────────────────────
@@ -300,9 +284,7 @@ export default function CarServicePage() {
           <span className="px-2.5 py-1 rounded-full bg-primary text-white text-xs font-bold w-fit mb-2">
             {label}
           </span>
-          <h1 className="font-heading text-4xl sm:text-5xl text-white">
-            {model}
-          </h1>
+
           <p className="text-sm text-white/70 mt-1">{tagline}</p>
         </div>
       </div>
@@ -372,7 +354,7 @@ export default function CarServicePage() {
             * Prices are indicative. Free pickup on orders above ₹5,000.
           </p>
           <Link href="/booking">
-            <Button size="xl">{"Book For " + model}</Button>
+            <Button size="xl">Book Now</Button>
           </Link>
         </div>
       </div>

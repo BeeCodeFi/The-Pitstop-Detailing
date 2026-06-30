@@ -123,8 +123,8 @@ export function Hero() {
           className="mt-12 sm:mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8 max-w-3xl mx-auto"
         >
           {[
-            { value: "5000+", label: "Cars Detailed" },
-            { value: "8+", label: "Years Experience" },
+            { value: "120+", label: "Cars Detailed" },
+            { value: "2+", label: "Years Experience" },
             { value: "4.9★", label: "Google Rating" },
             { value: "100%", label: "Satisfaction" },
           ].map((stat) => (

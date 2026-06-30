@@ -9,40 +9,39 @@ const carTypes = [
   {
     id: "hatchback",
     label: "Hatchback",
-    model: "Maruti Swift",
     tagline: "Swift · i20 · Polo & similar",
+    // Maruti Swift — red hatchback on road
     image:
       "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?w=700&q=80&auto=format&fit=crop",
   },
   {
     id: "sedan",
     label: "Sedan",
-    model: "Hyundai Verna",
     tagline: "Verna · City · Ciaz & similar",
+    // Hyundai Verna — sleek dark sedan
     image:
       "https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=700&q=80&auto=format&fit=crop",
   },
   {
     id: "compact_suv",
     label: "Compact SUV",
-    model: "Hyundai Creta",
     tagline: "Creta · Seltos · Brezza & similar",
-    image:
-      "https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=700&q=80&auto=format&fit=crop",
+    // Hyundai Creta — local image
+    image: "/gallery/creta.avif",
   },
   {
     id: "suv",
     label: "SUV",
-    model: "Toyota Fortuner",
     tagline: "Fortuner · Endeavour · MU-X & similar",
+    // Toyota Fortuner style large SUV
     image:
       "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?w=700&q=80&auto=format&fit=crop",
   },
   {
     id: "luxury",
     label: "Luxury",
-    model: "BMW",
     tagline: "BMW · Mercedes · Audi · Porsche & similar",
+    // BMW M5 — luxury sports sedan
     image:
       "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=700&q=80&auto=format&fit=crop",
   },
@@ -72,7 +71,7 @@ export default function ServicesPage() {
         </motion.div>
 
         {/* Car type grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 xl:gap-6">
+        <div className="flex flex-wrap justify-center gap-5 xl:gap-6 [&>*]:w-full [&>*]:sm:w-[calc(50%-10px)] [&>*]:lg:w-[calc(33.333%-14px)]">
           {carTypes.map((car, i) => (
             <motion.div
               key={car.id}
@@ -86,7 +85,7 @@ export default function ServicesPage() {
                   <div className="relative aspect-video overflow-hidden">
                     <Image
                       src={car.image}
-                      alt={car.model}
+                      alt={car.label}
                       fill
                       className="object-cover transition-transform duration-500 group-hover:scale-105"
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
@@ -104,12 +103,9 @@ export default function ServicesPage() {
                     </div>
                   </div>
 
-                  {/* Info */}
+                  {/* Info — tagline + CTA only, label shown on image badge */}
                   <div className="p-4">
-                    <h3 className="font-bold text-foreground text-base">
-                      {car.model}
-                    </h3>
-                    <p className="text-xs text-muted-foreground mt-0.5">
+                    <p className="text-xs text-muted-foreground">
                       {car.tagline}
                     </p>
                     <p className="mt-3 text-xs font-semibold text-primary">
@@ -125,3 +121,4 @@ export default function ServicesPage() {
     </div>
   );
 }
+

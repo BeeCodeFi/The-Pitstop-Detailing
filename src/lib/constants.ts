@@ -5,9 +5,9 @@ export const SITE_CONFIG = {
   description:
     "Premium car detailing services with ceramic coating, PPF, interior restoration, and vehicle pickup & delivery. Book your appointment online.",
   url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
-  phone: "+91 98765 43210",
-  email: "hello@thepitstopdetailing.com",
-  address: "123 Auto Lane, Bangalore, Karnataka 560001",
+  phone: "+91 92632 49195",
+  email: "thepitstopdetailingstudio@gmail.com",
+  address: "Bargain Road, Ranchi, Jharkhand",
   socials: {
     instagram: "https://instagram.com/thepitstopdetailing",
     facebook: "https://facebook.com/thepitstopdetailing",

@@ -91,7 +91,7 @@ export default function RegisterPage() {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Input id="name" name="name" label="Full Name" placeholder="Your name" required autoComplete="name" />
-              <Input id="phone" name="phone" label="Phone" type="tel" placeholder="+91 98765 43210" required autoComplete="tel" />
+              <Input id="phone" name="phone" label="Phone" type="tel" placeholder="e.g. +91 98765 XXXXX (Do not share full number)" required autoComplete="tel" />
             </div>
             <Input id="email" name="email" label="Email" type="email" placeholder="you@example.com" required autoComplete="email" />
             <div className="relative">

@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { motion } from "framer-motion";
 import { useInView } from "framer-motion";
@@ -16,45 +16,45 @@ import { Card } from "@/components/ui";
 const services = [
   {
     icon: Droplets,
-    title: "Exterior Detailing",
+    title: "Detailing",
     description:
-      "Multi-stage paint correction, clay bar treatment, and hand polishing to restore your car's showroom finish.",
+      "Full interior and exterior detailing with multi-stage paint correction, clay bar treatment, and hand polishing to restore your car's showroom finish.",
     color: "text-blue-400",
   },
   {
-    icon: Sparkles,
-    title: "Interior Detailing",
-    description:
-      "Deep vacuum, steam cleaning, leather conditioning, and odor elimination for a factory-fresh cabin.",
-    color: "text-amber-400",
-  },
-  {
     icon: Shield,
-    title: "Ceramic Coating",
+    title: "Coating",
     description:
-      "9H nano-ceramic protection offering years of UV resistance, hydrophobic properties, and scratch defense.",
+      "9H nano-ceramic protection offering years of UV resistance, hydrophobic properties, and deep gloss enhancement for long-lasting shine.",
     color: "text-emerald-400",
   },
   {
     icon: Paintbrush,
-    title: "Paint Protection Film",
+    title: "PPF",
     description:
-      "Self-healing TPU film that shields your paint from rock chips, scratches, and environmental damage.",
+      "Self-healing Paint Protection Film that shields your paint from rock chips, scratches, and environmental damage — virtually invisible protection.",
     color: "text-purple-400",
   },
   {
-    icon: Car,
-    title: "Pickup & Delivery",
+    icon: Sparkles,
+    title: "Restoration",
     description:
-      "We pick up your vehicle from your doorstep and deliver it back looking pristine. Zero hassle for you.",
-    color: "text-primary",
+      "Full vehicle restoration services bringing faded, oxidized, or neglected cars back to their original beauty and beyond.",
+    color: "text-amber-400",
   },
   {
     icon: Wrench,
-    title: "Engine Bay Detailing",
+    title: "General Vehicle Diagnostic",
     description:
-      "Professional degreasing, steam cleaning, and dressing to make your engine bay look brand new.",
+      "Comprehensive vehicle health checks and diagnostic scanning to identify issues early and keep your car running at its best.",
     color: "text-orange-400",
+  },
+  {
+    icon: Car,
+    title: "Dent and Paint",
+    description:
+      "Professional dent removal and precision paintwork to eliminate dings, scratches, and body damage — restoring a flawless finish.",
+    color: "text-primary",
   },
 ];
 

@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { bookingSchema } from "@/lib/validators";
+import { getServicePrice, getServiceName, type VehicleType } from "@/lib/services";
+import { notifyNewBooking } from "@/lib/notify";
 
 export async function POST(request: Request) {
   try {
@@ -67,17 +69,11 @@ export async function POST(request: Request) {
       });
     }
 
-    // Get service price (use a lookup map for now)
-    const servicePrices: Record<string, number> = {
-      essential: 249900,
-      premium: 599900,
-      ultimate: 1199900,
-      ceramic: 1499900,
-      "ppf-front": 2999900,
-      "ppf-full": 9999900,
-    };
-
-    const totalAmount = servicePrices[serviceId] || 0;
+    // Get service price from shared catalog
+    const resolvedPrice = getServicePrice(serviceId, vehicle.vehicleType as VehicleType);
+    if (resolvedPrice === null) {
+      return NextResponse.json({ error: "Invalid service or vehicle type combo" }, { status: 400 });
+    }
 
     // Create booking
     const booking = await prisma.booking.create({
@@ -85,7 +81,7 @@ export async function POST(request: Request) {
         userId: session.user.id,
         vehicleId: userVehicle.id,
         timeSlotId: slot.id,
-        totalAmount,
+        totalAmount: resolvedPrice,
         notes: notes || null,
         status: "PENDING",
       },
@@ -108,6 +104,25 @@ export async function POST(request: Request) {
           status: "SCHEDULED",
         },
       });
+    }
+
+    // Send notifications (Email & WhatsApp)
+    try {
+      const fullServiceName = getServiceName(serviceId);
+      const vehicleDesc = `${vehicle.year} ${vehicle.make} ${vehicle.model}`;
+      await notifyNewBooking({
+        customerName: session.user.name || "Customer",
+        customerEmail: session.user.email || "",
+        service: fullServiceName,
+        vehicle: vehicleDesc,
+        date: date,
+        timeSlot: timeSlot,
+        pickupAddress: needsPickup && pickup ? `${pickup.address}, ${pickup.city} - ${pickup.pincode}` : undefined,
+        totalAmount: resolvedPrice,
+        bookingId: booking.id,
+      });
+    } catch (notifyErr) {
+      console.error("[notify] Error sending new booking notification:", notifyErr);
     }
 
     return NextResponse.json(
