@@ -113,7 +113,7 @@ export default function BookingPage() {
   const [booking, setBooking] = useState<BookingState>(initialState);
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [bookingResult, setBookingResult] = useState<{ success: boolean; message: string; bookingId?: string } | null>(null);
+  const [bookingResult, setBookingResult] = useState<{ success: boolean; message: string; bookingId?: string; detail?: string } | null>(null);
 
   const selectedService = getServiceById(booking.serviceId);
   const vehicleType = booking.vehicleType;
@@ -172,7 +172,8 @@ export default function BookingPage() {
       const json = await res.json();
       if (!res.ok) {
         if (res.status === 401) { router.push("/login"); return; }
-        setBookingResult({ success: false, message: json.error || "Booking failed" });
+        const errDetail = json.detail || (json.details ? JSON.stringify(json.details) : undefined);
+        setBookingResult({ success: false, message: json.error || "Booking failed", detail: errDetail });
         return;
       }
       setBookingResult({ success: true, message: "Booking enquiry submitted! Our team will reach out on WhatsApp to confirm your appointment and final pricing.", bookingId: json.booking?.id });
@@ -190,6 +191,7 @@ export default function BookingPage() {
             </div>
             <h1 className="font-heading text-3xl text-foreground mb-3">{bookingResult.success ? "ENQUIRY SUBMITTED!" : "SUBMISSION FAILED"}</h1>
             <p className="text-muted-foreground mb-2">{bookingResult.message}</p>
+            {bookingResult.detail && <p className="text-xs text-error font-mono mb-2 bg-error/5 p-2 rounded">{bookingResult.detail}</p>}
             {bookingResult.bookingId && <p className="text-xs text-muted-foreground mb-8">Booking ID: <span className="font-mono text-primary">{bookingResult.bookingId}</span></p>}
             <div className="flex gap-3 justify-center">
               {bookingResult.success

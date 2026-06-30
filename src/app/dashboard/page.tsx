@@ -9,13 +9,12 @@ import { Calendar, Car, LogOut, Clock, AlertCircle, RefreshCw } from "lucide-rea
 
 interface Booking {
   id: string;
-  date: string;
-  timeSlot: string;
   status: string;
   totalAmount: number;
   serviceName?: string;
   notes?: string;
   vehicle: { make: string; model: string; year: number; color?: string };
+  timeSlot: { date: string; startTime: string; endTime: string };
 }
 
 export default function DashboardPage() {
@@ -164,11 +163,11 @@ export default function DashboardPage() {
                       <div className="flex items-center gap-3 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1">
                           <Calendar className="h-3 w-3" />
-                          {new Date(booking.date).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
+                          {new Date(booking.timeSlot.date).toLocaleDateString("en-IN", { day: "numeric", month: "short", year: "numeric" })}
                         </span>
                         <span className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
-                          {booking.timeSlot}
+                          {booking.timeSlot.startTime}
                         </span>
                       </div>
                     </div>

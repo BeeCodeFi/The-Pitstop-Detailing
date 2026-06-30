@@ -23,6 +23,7 @@ export async function POST(request: Request) {
     const parsed = bookingSchema.safeParse(body);
 
     if (!parsed.success) {
+      console.error("[bookings] Validation failed:", JSON.stringify(parsed.error.flatten().fieldErrors, null, 2));
       return NextResponse.json(
         { error: "Validation failed", details: parsed.error.flatten().fieldErrors },
         { status: 400 }
@@ -151,8 +152,9 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     console.error("Booking error:", error);
+    const message = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
-      { error: "Failed to create booking. Please try again." },
+      { error: "Failed to create booking. Please try again.", detail: message },
       { status: 500 }
     );
   }
