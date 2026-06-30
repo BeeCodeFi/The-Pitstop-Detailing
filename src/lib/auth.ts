@@ -5,6 +5,7 @@ import Google from "next-auth/providers/google";
 import bcryptjs from "bcryptjs";
 import { timingSafeEqual } from "crypto";
 import { prisma } from "@/lib/prisma";
+import { authConfig } from "@/lib/auth.config";
 
 const ADMIN_EMAIL = "thepitstopdetailingstudio@gmail.com";
 
@@ -92,23 +93,16 @@ providers.push(
 );
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
+  ...authConfig,
   ...(prisma ? { adapter: PrismaAdapter(prisma) } : {}),
-  trustHost: true,
-  session: { strategy: "jwt" },
-  pages: {
-    signIn: "/login",
-    error: "/login",
-  },
   providers,
   callbacks: {
     async jwt({ token, user, account }) {
       if (user) {
-        // credentials provider returns role directly
         token.role = (user as { role?: string }).role ?? "CUSTOMER";
         token.id = user.id;
       }
-      // For OAuth (e.g. Google), the user object from NextAuth doesn't carry
-      // DB custom fields like `role`. Fetch from DB on first OAuth sign-in.
+      // For OAuth (Google), fetch role from DB on first sign-in
       if (account && account.provider !== "credentials" && token.email && !token.role) {
         try {
           const dbUser = await prisma?.user.findUnique({
