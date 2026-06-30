@@ -8,7 +8,6 @@ import {
   IndianRupee,
   TrendingUp,
   ArrowRight,
-  Car,
   Activity,
 } from "lucide-react";
 import Link from "next/link";
@@ -186,19 +185,6 @@ export default function AdminDashboardPage() {
         </div>
       </div>
 
-      {/* Info banner */}
-      <div className="rounded-2xl border border-white/5 bg-white/2 p-5 flex items-center gap-4">
-        <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center shrink-0">
-          <Car className="h-5 w-5 text-primary" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <p className="text-sm font-medium text-white">Connect your database to see live data</p>
-          <p className="text-xs text-gray-500 mt-0.5">
-            Add <code className="text-primary/80 bg-primary/10 px-1 rounded">DATABASE_URL</code> to your{" "}
-            <code className="text-gray-400 bg-white/5 px-1 rounded">.env.local</code> file to enable all features.
-          </p>
-        </div>
-      </div>
     </div>
   );
 }
