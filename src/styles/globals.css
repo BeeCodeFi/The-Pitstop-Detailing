@@ -75,6 +75,9 @@ html {
   /* Prevent font inflation on mobile */
   -webkit-text-size-adjust: 100%;
   text-size-adjust: 100%;
+  /* Prevent horizontal scroll on mobile — must be on html, not just body */
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 body {
@@ -82,6 +85,7 @@ body {
   color: var(--color-foreground);
   line-height: 1.6;
   overflow-x: hidden;
+  max-width: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   /* Better touch scrolling on iOS */
