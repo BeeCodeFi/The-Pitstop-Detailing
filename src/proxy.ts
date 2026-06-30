@@ -1,23 +1,19 @@
-import { getToken } from "next-auth/jwt";
+import NextAuth from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
+import { authConfig } from "@/lib/auth.config";
+
+const { auth } = NextAuth(authConfig);
 
 export async function proxy(req: NextRequest) {
-  const { pathname } = req.nextUrl;
-
   // Forward pathname as a request header so server components (root layout) can read it
   const requestHeaders = new Headers(req.headers);
-  requestHeaders.set("x-pathname", pathname);
+  requestHeaders.set("x-pathname", req.nextUrl.pathname);
   const response = NextResponse.next({ request: { headers: requestHeaders } });
 
-  const token = await getToken({
-    req,
-    secret: process.env.AUTH_SECRET,
-    cookieName: process.env.NODE_ENV === "production"
-      ? "__Secure-authjs.session-token"
-      : "authjs.session-token",
-  });
-  const isLoggedIn = !!token;
-  const userRole = token?.role as string | undefined;
+  const session = await auth();
+  const isLoggedIn = !!session?.user;
+  const userRole = (session?.user as { role?: string } | undefined)?.role;
+  const { pathname } = req.nextUrl;
 
   // Protect admin routes — only ADMIN role may access (except admin login page)
   if (pathname.startsWith("/admin") && pathname !== "/admin/login") {
