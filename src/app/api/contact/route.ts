@@ -23,6 +23,7 @@ export async function POST(request: Request) {
         name: parsed.data.name,
         email: parsed.data.email,
         phone: parsed.data.phone || undefined,
+        subject: parsed.data.subject,
         message: parsed.data.message,
       });
     } catch (notifyErr) {

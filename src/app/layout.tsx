@@ -68,7 +68,7 @@ export default async function RootLayout({
   const isAdmin = pathname.startsWith("/admin");
 
   return (
-    <html lang="en" className={`${inter.variable} ${bebasNeue.variable}`}>
+    <html lang="en" className={`${inter.variable} ${bebasNeue.variable}`} suppressHydrationWarning>
       <body className="min-h-screen bg-background text-foreground font-[family-name:var(--font-inter)]">
         <Providers>
           {isAdmin ? (

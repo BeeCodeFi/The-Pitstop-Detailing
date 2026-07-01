@@ -66,9 +66,10 @@ export const contactSchema = z.object({
   email: z.string().email("Invalid email"),
   phone: z
     .string()
-    .min(10, "Phone must be at least 10 digits")
-    .regex(/^[+]?[\d\s-]+$/, "Invalid phone number"),
-  vehicle: z.string().max(100).optional(),
+    .max(20)
+    .optional()
+    .or(z.literal("")),
+  subject: z.string().min(2, "Subject is required").max(200),
   message: z.string().min(10, "Message must be at least 10 characters").max(2000),
 });
 

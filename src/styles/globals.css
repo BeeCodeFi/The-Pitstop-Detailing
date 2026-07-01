@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Enable class-based dark mode so next-themes works with dark: utilities */
+@variant dark (&:is(.dark, .dark *));
+
 @theme {
   /* Colors */
   --color-background: #0A0A0A;
@@ -133,6 +136,25 @@ a, button, [role="button"], select, input, textarea {
 
 .glass {
   background: rgba(20, 20, 20, 0.8);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--color-border);
+}
+
+/* ─── Light Theme ──────────────────────────────────────────────────────────── */
+
+html.light {
+  --color-background: #F4F4F5;
+  --color-foreground: #111111;
+  --color-secondary: #ECECEC;
+  --color-muted: #E0E0E0;
+  --color-muted-foreground: #525252;
+  --color-border: #D0D0D0;
+  --color-card: #FFFFFF;
+  --color-card-hover: #F8F8F8;
+}
+
+html.light .glass {
+  background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
   border: 1px solid var(--color-border);
 }

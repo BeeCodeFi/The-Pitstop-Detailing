@@ -69,14 +69,12 @@ async function dispatchWhatsApp(to: string, message: string) {
   }
 }
 
+// Company WhatsApp number — falls back to hardcoded business number
+const BUSINESS_WHATSAPP = process.env.WHATSAPP_BUSINESS_NUMBER || "919263249195";
+
 /** Send a WhatsApp message to the business WhatsApp inbox. */
 export async function sendWhatsApp(message: string) {
-  const to = process.env.WHATSAPP_BUSINESS_NUMBER;
-  if (!to) {
-    console.warn("[notify] WHATSAPP_BUSINESS_NUMBER not set — business WhatsApp skipped");
-    return;
-  }
-  await dispatchWhatsApp(to, message);
+  await dispatchWhatsApp(BUSINESS_WHATSAPP, message);
 }
 
 /**
@@ -210,23 +208,26 @@ export async function notifyContactForm({
   name,
   email,
   phone,
+  subject,
   message,
 }: {
   name: string;
   email: string;
   phone?: string;
+  subject: string;
   message: string;
 }) {
   // Email to business
   await sendEmail({
     to: BUSINESS_EMAIL,
-    subject: `New Contact Form Message from ${name}`,
+    subject: `New Contact: ${subject} — from ${name}`,
     html: `
       <div style="font-family:sans-serif;max-width:560px;margin:auto">
         <h2 style="color:#e31b23">New Contact Message 📬</h2>
         <p><strong>Name:</strong> ${name}</p>
         <p><strong>Email:</strong> ${email}</p>
         ${phone ? `<p><strong>Phone:</strong> ${phone}</p>` : ""}
+        <p><strong>Subject:</strong> ${subject}</p>
         <p><strong>Message:</strong></p>
         <blockquote style="border-left:3px solid #e31b23;padding-left:16px;margin:0;color:#333">${message}</blockquote>
       </div>
@@ -239,6 +240,7 @@ export async function notifyContactForm({
     `*From:* ${name}\n` +
     `*Email:* ${email}\n` +
     `${phone ? `*Phone:* ${phone}\n` : ""}` +
+    `*Subject:* ${subject}\n` +
     `*Message:* ${message.slice(0, 200)}`
   );
 }

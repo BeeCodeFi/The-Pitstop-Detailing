@@ -2,19 +2,19 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Phone, LogIn, UserPlus, LayoutDashboard, LogOut, User } from "lucide-react";
 import { useSession, signOut } from "next-auth/react";
 import { Button } from "@/components/ui";
 import { NAV_LINKS, SITE_CONFIG } from "@/lib/constants";
+import { ThemeToggle } from "./theme-toggle";
 
 export function Header() {
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const pathname = usePathname();
-  const router = useRouter();
   const { data: session, status } = useSession();
 
   useEffect(() => {
@@ -38,9 +38,9 @@ export function Header() {
       <header
         className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
           scrolled || isOpen
-            ? "bg-[#0A0A0A] shadow-lg shadow-black/50"
-            : "bg-[#0A0A0A]/90 backdrop-blur-xl"
-        } border-b border-[#333333]`}
+            ? "bg-background shadow-lg shadow-black/20"
+            : "bg-background/90 backdrop-blur-xl"
+        } border-b border-border`}
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="flex h-16 items-center justify-between">
@@ -50,7 +50,7 @@ export function Header() {
                 P
               </div>
               <div className="hidden sm:block">
-                <span className="text-base font-bold text-white tracking-tight leading-none">
+                <span className="text-base font-bold text-foreground tracking-tight leading-none">
                   THE PITSTOP
                 </span>
                 <span className="block text-[9px] font-semibold text-[#E31837] tracking-[0.25em] uppercase">
@@ -69,8 +69,8 @@ export function Header() {
                     href={link.href}
                     className={`px-4 py-2 text-sm font-medium rounded-md transition-colors relative group ${
                       isActive
-                        ? "text-white bg-white/5"
-                        : "text-[#A0A0A0] hover:text-white hover:bg-white/5"
+                        ? "text-foreground bg-foreground/5"
+                        : "text-muted-foreground hover:text-foreground hover:bg-foreground/5"
                     }`}
                   >
                     {link.label}
@@ -88,20 +88,21 @@ export function Header() {
             <div className="hidden lg:flex items-center gap-3">
               <a
                 href={`tel:${SITE_CONFIG.phone}`}
-                className="flex items-center gap-2 text-sm text-[#A0A0A0] hover:text-[#E31837] transition-colors"
+                className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
               >
                 <Phone className="h-4 w-4" />
                 <span className="hidden xl:inline">{SITE_CONFIG.phone}</span>
               </a>
 
+              <ThemeToggle />
               {status === "loading" ? null : isLoggedIn ? (
                 /* ── Logged-in user menu ── */
                 <div className="relative">
                   <button
                     onClick={() => setUserMenuOpen((o) => !o)}
-                    className="flex items-center gap-2 rounded-full px-3 py-1.5 border border-white/20 bg-white/5 hover:bg-white/10 transition-colors text-sm text-white"
+                    className="flex items-center gap-2 rounded-full px-3 py-1.5 border border-foreground/20 bg-foreground/5 hover:bg-foreground/10 transition-colors text-sm text-foreground"
                   >
-                    <span className="h-6 w-6 rounded-full bg-[#E31837] flex items-center justify-center text-xs font-bold shrink-0">
+                    <span className="h-6 w-6 rounded-full bg-[#E31837] flex items-center justify-center text-xs font-bold text-white shrink-0">
                       {userInitial}
                     </span>
                     <span className="max-w-[100px] truncate hidden xl:block">{userName || "Account"}</span>
@@ -113,21 +114,21 @@ export function Header() {
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: 6, scale: 0.97 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute right-0 mt-2 w-44 rounded-xl border border-white/10 bg-[#141414] shadow-2xl overflow-hidden z-50"
+                        className="absolute right-0 mt-2 w-44 rounded-xl border border-foreground/10 bg-card shadow-2xl overflow-hidden z-50"
                       >
                         <Link
                           href="/dashboard"
-                          className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#A0A0A0] hover:text-white hover:bg-white/5 transition-colors"
+                          className="flex items-center gap-2.5 px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-colors"
                         >
                           <LayoutDashboard className="h-4 w-4" /> Dashboard
                         </Link>
                         <Link
                           href="/booking"
-                          className="flex items-center gap-2.5 px-4 py-3 text-sm text-[#A0A0A0] hover:text-white hover:bg-white/5 transition-colors"
+                          className="flex items-center gap-2.5 px-4 py-3 text-sm text-muted-foreground hover:text-foreground hover:bg-foreground/5 transition-colors"
                         >
                           <User className="h-4 w-4" /> Book Now
                         </Link>
-                        <div className="border-t border-white/10" />
+                        <div className="border-t border-foreground/10" />
                         <button
                           onClick={() => signOut({ callbackUrl: "/" })}
                           className="w-full flex items-center gap-2.5 px-4 py-3 text-sm text-red-400 hover:text-red-300 hover:bg-red-500/10 transition-colors"
@@ -157,6 +158,7 @@ export function Header() {
 
             {/* Mobile right side */}
             <div className="flex lg:hidden items-center gap-2 shrink-0">
+              <ThemeToggle />
               {isLoggedIn ? (
                 <Link href="/dashboard" onClick={() => setIsOpen(false)}>
                   <span className="h-8 w-8 rounded-full bg-[#E31837] flex items-center justify-center text-xs font-bold text-white">
@@ -176,22 +178,22 @@ export function Header() {
                 onClick={() => setIsOpen(!isOpen)}
                 aria-label={isOpen ? "Close menu" : "Open menu"}
                 aria-expanded={isOpen}
-                className="relative flex items-center justify-center w-10 h-10 rounded-md border border-white/20 bg-white/5 hover:bg-white/10 hover:border-white/40 transition-colors"
+                className="relative flex items-center justify-center w-10 h-10 rounded-md border border-foreground/20 bg-foreground/5 hover:bg-foreground/10 hover:border-foreground/40 transition-colors"
                 style={{ minWidth: "40px" }}
               >
                 <div className="flex flex-col justify-center items-center gap-[5px] w-5 h-5">
                   <span
-                    className={`block h-0.5 w-5 bg-white rounded-full transition-all duration-300 origin-center ${
+                    className={`block h-0.5 w-5 bg-foreground rounded-full transition-all duration-300 origin-center ${
                       isOpen ? "rotate-45 translate-y-[7px]" : ""
                     }`}
                   />
                   <span
-                    className={`block h-0.5 w-5 bg-white rounded-full transition-all duration-300 ${
+                    className={`block h-0.5 w-5 bg-foreground rounded-full transition-all duration-300 ${
                       isOpen ? "opacity-0 scale-x-0" : ""
                     }`}
                   />
                   <span
-                    className={`block h-0.5 w-5 bg-white rounded-full transition-all duration-300 origin-center ${
+                    className={`block h-0.5 w-5 bg-foreground rounded-full transition-all duration-300 origin-center ${
                       isOpen ? "-rotate-45 -translate-y-[7px]" : ""
                     }`}
                   />
@@ -222,7 +224,7 @@ export function Header() {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.25, ease: "easeOut" }}
-              className="fixed top-16 left-0 right-0 z-40 lg:hidden bg-[#0A0A0A] border-b border-[#333333] shadow-2xl"
+              className="fixed top-16 left-0 right-0 z-40 lg:hidden bg-background border-b border-border shadow-2xl"
             >
               <nav className="px-4 py-3">
                 {NAV_LINKS.map((link) => {
@@ -234,8 +236,8 @@ export function Header() {
                       onClick={() => setIsOpen(false)}
                       className={`flex items-center gap-3 px-4 py-3.5 rounded-lg mb-1 text-base font-medium transition-colors ${
                         isActive
-                          ? "bg-[#E31837]/10 text-white border border-[#E31837]/30"
-                          : "text-[#A0A0A0] hover:text-white hover:bg-[#141414]"
+                          ? "bg-primary/10 text-foreground border border-primary/30"
+                          : "text-muted-foreground hover:text-foreground hover:bg-card"
                       }`}
                     >
                       {isActive && (
@@ -248,10 +250,10 @@ export function Header() {
               </nav>
 
               {/* Bottom CTA strip */}
-              <div className="px-4 pb-4 pt-2 border-t border-[#333333] flex items-center gap-3">
+              <div className="px-4 pb-4 pt-2 border-t border-border flex items-center gap-3">
                 <a
                   href={`tel:${SITE_CONFIG.phone}`}
-                  className="flex items-center gap-2 text-sm text-[#A0A0A0] hover:text-[#E31837] transition-colors"
+                  className="flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors"
                   onClick={() => setIsOpen(false)}
                 >
                   <Phone className="h-4 w-4" />
