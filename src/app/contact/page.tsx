@@ -185,7 +185,7 @@ export default function ContactPage() {
                   )}
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <Input id="name" name="name" label="Name" placeholder="Your name" required />
-                    <Input id="phone" name="phone" label="Phone" type="tel" placeholder="e.g. +91 98765 XXXXX (Do not share full number)" required />
+                    <Input id="phone" name="phone" label="Phone (optional)" type="tel" placeholder="+91 98765 XXXXX" />
                   </div>
                   <Input id="email" name="email" label="Email" type="email" placeholder="you@example.com" required />
                   <Input id="subject" name="subject" label="Subject" placeholder="e.g., Custom quote for ceramic coating" required />
